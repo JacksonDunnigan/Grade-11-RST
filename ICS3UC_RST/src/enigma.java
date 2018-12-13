@@ -124,34 +124,31 @@ public class enigma extends Application {
 
             	if (validKey(key,alphabet)) {
             		for (int i = 0; i < LETTER_AMOUNT; i++) {
-    			
+            			//int random_num=randomRange(0,26);
+            			
             			if (alphabet[i].equals(key)) {
-            				rotor_update();
-            				text_list[i].setFill(Color.BLACK);
-            				button_list[i].setFill(LIGHT_GREY);
-            				button_list[i].setStroke(Color.BLACK);
             				button_list[i].setEffect(yellow_shadow);
+            				//text_list[i].setFill(Color.BLACK);
+            				//button_list[i].setFill(LIGHT_GREY);
+            				//button_list[i].setStroke(Color.BLACK);
+            				//button_list[i].setEffect(yellow_shadow);
             			}
             			else {
-            				text_list[i].setFill(LIGHT_GREY);
-            				button_list[i].setFill(Color.BLACK); 
-            				button_list[i].setStroke(Color.WHITE);
-            				button_list[i].setEffect(black_shadow);
+            				//text_list[i].setFill(LIGHT_GREY);
+            				//button_list[i].setFill(Color.BLACK); 
+            				//button_list[i].setStroke(LIGHT_GREY);
+            					button_list[i].setEffect(black_shadow);	
+
+            				}
             			}
             		}
             	}
             }
         }
-    }
     
     
     
-    //passes the letter through the rotors and updates the rotors positions
-    void rotor_update(){
-    	
-    }
-    
-    
+
     
   //generates the interface
     void generateInterface() {   
@@ -193,7 +190,7 @@ public class enigma extends Application {
             	//creates the circle and gives the circles a message
         		button_list[i] = new Circle(x, y, CIRCLE_SIZE, Color.BLACK);
         		button_list[i].setEffect(black_shadow);
-        		button_list[i].setStroke(Color.WHITE);
+        		button_list[i].setStroke(LIGHT_GREY);
         		button_list[i].setStrokeWidth(3);
         		
             	text_list[i] = new Text(x-CIRCLE_SIZE*0.45, y+CIRCLE_SIZE*0.4, alphabet[i]);
@@ -203,7 +200,24 @@ public class enigma extends Application {
         }
   
     }
-
+    
+    //passes the letter through the rotors and updates the rotors positions
+    public static int rotorUpdate(){
+    	int num=randomRange(0,25);
+    	return num;
+    }
+    
+    
+    
+	// finds a random number between 2 inputs
+	public static int randomRange(int a, int b) {
+	    int highNum = Math.max(a, b);
+	    int lowNum = Math.min(a, b);
+	    int range = highNum - lowNum + 1;
+	    return (int) (Math.random() * range) + lowNum;
+	}
+	
+	
     //makes sure the player presses a letter of the alphabet
     public static boolean validKey(String key, String[] alphabet) {
     	//converts the alphabet to a list
