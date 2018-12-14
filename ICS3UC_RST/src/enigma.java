@@ -42,16 +42,32 @@ public class enigma extends Application {
 	Ellipse[] rotor_list = new Ellipse[3];
 	
 	//defining the roters and alphabet
-	String[] alphabet =  new String[]{"Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Z","X","C","V","B","N","M"};
-	String[] rotor_I = new String[] {"E","K","M","F","L","G","D","Q","V","Z","N","T","O","W","Y","H","X","U","S","P","A","I","B","R","C","J"};
-	String[] rotor_II = new String[] {"A","J","D","K","S","I","R","U","X","B","L","H","W","T","M","C","Q","G","Z","N","P","Y","F","V","O","E"};
-	String[] rotor_III = new String[] {"B","D","F","H","J","L","C","P","R","T","X","V","Z","N","Y","E","I","W","G","A","K","M","U","S","Q","O"};
+	static String[] alphabet =  new String[]{"Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Z","X","C","V","B","N","M"};
+	static String[] rotor_I = new String[] {"E","K","M","F","L","G","D","Q","V","Z","N","T","O","W","Y","H","X","U","S","P","A","I","B","R","C","J"};
+	static String[] rotor_II = new String[] {"A","J","D","K","S","I","R","U","X","B","L","H","W","T","M","C","Q","G","Z","N","P","Y","F","V","O","E"};
+	static String[] rotor_III = new String[] {"B","D","F","H","J","L","C","P","R","T","X","V","Z","N","Y","E","I","W","G","A","K","M","U","S","Q","O"};
 	String[] rotor_IV = new String[] {"E","S","O","V","P","Z","J","A","Y","Q","U","I","R","H","X","L","N","F","T","G","K","D","C","M","W","B"};
 	String[] rotor_V = new String[] {"V","Z","B","R","G","I","T","Y","U","P","S","D","N","H","L","X","A","W","M","J","Q","O","F","E","C","K"};
 	String[] rotor_VI = new String[] {"J","P","G","V","O","U","M","F","Y","Q","B","E","N","H","Z","R","D","K","A","S","X","L","I","C","T","W"};
 	String[] rotor_VII = new String[] {"N","Z","J","H","G","R","C","X","M","Y","S","W","B","O","U","F","A","I","V","L","P","E","K","Q","D","T"};
 	String[] rotor_VIII = new String[] {"F","K","Q","H","T","L","X","O","C","B","J","S","P","D","Z","R","A","M","E","W","N","I","U","Y","G","V"};
 
+	static int rotor_counter_1 = 0;
+	static int rotor_counter_2 = 0;
+	static int rotor_counter_3 = 0;
+	//holds the chosen rotors
+//	String[][] current_rotors = new String[3][alphabet.length]; {
+//		for (int i = 0; i<alphabet.length; i++) {
+//			current_rotors[0][i] = rotor_I[i];
+//			current_rotors[1][i] = rotor_II[i];
+//			current_rotors[2][i] = rotor_III[i];
+//		}
+//	}
+	static String[][] current_rotors = new String[][]{rotor_I,rotor_II,rotor_III};
+
+
+	
+	//{rotor_I,rotor_II,rotor_III};	
 			
 	//defining custom colors
 	static final Color DARK_GREY = Color.rgb(64,64,64);
@@ -80,8 +96,7 @@ public class enigma extends Application {
         
         //generates the interface
         generateInterface();
-        
-        
+
         //adds everything to a group
         canvas.getChildren().addAll(button_list);
         canvas.getChildren().addAll(text_list);
@@ -89,7 +104,6 @@ public class enigma extends Application {
 
         AnimationTimer timer = new Step();
         timer.start();
-
 
         //starts the game
         Scene scene = new Scene(canvas, SCREEN_WIDTH, SCREEN_HEIGHT, DARK_GREY);
@@ -116,36 +130,26 @@ public class enigma extends Application {
 
         @Override
         public void handle(KeyEvent event) {
-
+        	String key;
         	//checks if the player is touching a key
             KeyCode code = event.getCode();
             if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-            	String key = ""+code;
-
+            	 key = rotorUpdate();
             	if (validKey(key,alphabet)) {
-            		for (int i = 0; i < LETTER_AMOUNT; i++) {
-            			//int random_num=randomRange(0,26);
+            		for (int i = 0; i < LETTER_AMOUNT; i++)
             			
             			if (alphabet[i].equals(key)) {
             				button_list[i].setEffect(yellow_shadow);
-            				//text_list[i].setFill(Color.BLACK);
-            				//button_list[i].setFill(LIGHT_GREY);
-            				//button_list[i].setStroke(Color.BLACK);
-            				//button_list[i].setEffect(yellow_shadow);
             			}
             			else {
-            				//text_list[i].setFill(LIGHT_GREY);
-            				//button_list[i].setFill(Color.BLACK); 
-            				//button_list[i].setStroke(LIGHT_GREY);
-            					button_list[i].setEffect(black_shadow);	
-
-            				}
-            			}
-            		}
-            	}
-            }
+            				button_list[i].setEffect(black_shadow);	
+        				}
+        			}
+        		}
+        	}
         }
     
+
     
     
 
@@ -153,7 +157,6 @@ public class enigma extends Application {
   //generates the interface
     void generateInterface() {   
     	
-       	
      	//generates ellipses
     	for (int i = 0; i < rotor_list.length; i++) {
     		 rotor_list[i] = new Ellipse();
@@ -164,9 +167,7 @@ public class enigma extends Application {
     		 rotor_list[i].setEffect(black_shadow);
     		 rotor_list[i].setFill(LIGHT_GREY);
     		 rotor_list[i].setStroke(Color.BLACK);
-    		 
     	 }
-    	
     	
     	//generates circles 
         for (int i = 0; i < button_list.length; i++) {
@@ -202,12 +203,55 @@ public class enigma extends Application {
     }
     
     //passes the letter through the rotors and updates the rotors positions
-    public static int rotorUpdate(){
-    	int num=randomRange(0,25);
+    public static String rotorUpdate(){
+    	String num;
+    	
+    	//Runs the number through the rotors
+    	num = current_rotors[0][rotor_counter_1];
+    	num = current_rotors[1][rotor_counter_2];
+    	num = current_rotors[2][rotor_counter_3];
+    	
+
+    	//changes the first rotors index
+    	if (rotor_counter_1+1<alphabet.length) {
+    		rotor_counter_1+=1;
+    	} else {
+    		rotor_counter_1=0;
+    		
+    		//changes the second rotors index
+        	if (rotor_counter_2+1<alphabet.length) {
+        		rotor_counter_2+=1;
+        	} else {
+        		rotor_counter_2=0;
+        		
+        		//changes the third rotors index
+            	if (rotor_counter_3+1<alphabet.length) {
+            		rotor_counter_3+=1;
+            	} else {
+            		rotor_counter_3=0;
+            	}
+        	}
+    	}
+    	
+    	num = current_rotors[2][rotor_counter_3];
+    	num = current_rotors[1][rotor_counter_2];
+    	num = current_rotors[0][rotor_counter_1];
+
+    	
+//    	num = array[1][0];
+//    	array = rotorChange(array,1);
+//    	
+//    	num = array[2][0];
+//    	array = rotorChange(array,2);
+    	
     	return num;
     }
     
-    
+    //shifts the letters
+    public static String[][] rotorChange(int index) {
+    	
+    	return current_rotors;
+    }
     
 	// finds a random number between 2 inputs
 	public static int randomRange(int a, int b) {
