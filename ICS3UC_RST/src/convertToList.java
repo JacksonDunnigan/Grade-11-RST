@@ -2,7 +2,7 @@
 public class convertToList {
 	public static void main(String[] args) {
 		String[] array = new String[26];
-		String word = "FKQHTLXOCBJSPDZRAMEWNIUYGV";
+		String word = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		String output = "{";
 		String Quote = "\"";
 		
