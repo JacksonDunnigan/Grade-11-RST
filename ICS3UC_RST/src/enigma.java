@@ -1,6 +1,7 @@
 //import activity4.BallClicker.BallClickHandler;
 import javafx.application.Application;
 
+//import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,6 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -164,6 +166,8 @@ public class enigma extends Application {
     void generateInterface() {   
     	Text text;
     	Ellipse rotor;
+    	Ellipse label;
+    	Rectangle rect;
     	
      	//generates ellipses and text to go in them
     	for (int i = 0; i < 3; i++) {
@@ -183,9 +187,23 @@ public class enigma extends Application {
      		text.setFont(small_font);
      		text.setFill(Color.WHITE);
      		canvas.getChildren().addAll(text);
+
+     		
+     		
+     		//adds squares to go behind the letters on the rotors
+     		label = new Ellipse();
+     		label.setCenterX(SCREEN_WIDTH/2-152+i*140);
+     		label.setCenterY(235);	
+     		label.setRadiusX(20); 
+     		label.setRadiusY(30);
+     		label.setFill(DARK_GREY);
+     		//rect.setEffect(black_shadow);
+     		//label.setStroke(Color.BLACK);
+     		canvas.getChildren().addAll(label);
+     		
      		
     	    //creates text that represents rotor index's
-    		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-163+i*140, 240, current_rotors.get(i).get(0));
+    		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 240, current_rotors.get(i).get(0));
     		rotor_list[2-i].setFont(small_font);
     		rotor_list[2-i].setFill(Color.WHITE);
     	}
@@ -232,24 +250,20 @@ public class enigma extends Application {
     	int index = key-'A';
     	String letter;
     	
-    	//first rotor
+    	//changes the letter
     	letter = rotor_1.get(index);   
-    	
-        if (rotorChange(rotor_1,true)) {
-        	rotorChange(rotor_2,true);
+        if (rotorChange(rotor_1,true,false)) {
+        	if (rotorChange(rotor_2,true,false)) {
+        		letter = rotor_2.get(Integer.parseInt(letter)-'A');
+        		rotorChange(rotor_3,true,false);
+        		letter = rotor_3.get(Integer.parseInt(letter)-'A');   
+        	}
         }
 
-    	//second rotor
-    	letter = rotor_2.get(index);
-        if (rotorChange(rotor_2,false)) {
-        	rotorChange(rotor_3,true);
-        }
-        
-    	//third rotor
-    	letter = rotor_3.get(index);    	
-    	letter = rotor_3.get(index);  
-    	letter = rotor_2.get(index);  
-    	letter = rotor_1.get(index);  
+    	//reflector
+    	//letter = rotor_3.get(reverseSignal(letter));  
+    	//letter = rotor_2.get(index);  
+    	//letter = rotor_1.get(index);  
     	
     	//returns the changed letters
     	return letter;
@@ -258,19 +272,19 @@ public class enigma extends Application {
     
     
     //shifts the letters
-    public static boolean rotorChange(ArrayList<String> index, boolean real) {
+    public static boolean rotorChange(ArrayList<String> index, boolean real , boolean reverse) {
 
     	String val;
     	boolean output = false;
     	val = index.get(25);
 
-    	
+    	//rotates the first rotor
     	if (index == rotor_1) {
     		if (real) {
     			index.remove(25);
             	index.add(0,val);
     		}
-    		
+    		//changes the message
     		rotor_list[0].setText(current_rotors.get(0).get(0)); 
     		
     		//changes the rotor counter index
@@ -282,11 +296,14 @@ public class enigma extends Application {
     			output = false;
     		}
     		
+    		
+    	//rotates the second rotor
     	} else if  (index == rotor_2){
     		if (real) {
     			index.remove(25);
             	index.add(0,val);
     		}
+    		//changes the message
     		rotor_list[1].setText(current_rotors.get(1).get(0)); 
     		
     		//changes the rotor counter index
@@ -297,12 +314,15 @@ public class enigma extends Application {
     			rotor_counter_2 += 1;
     			output = false;
     		}
+    	
     		
+    	//rotates the third rotor
     	} else if  (index == rotor_3){
     		if (real) {
     			index.remove(25);
             	index.add(0,val);
     		}
+    		//changes the message
     		rotor_list[2].setText(current_rotors.get(2).get(0)); 
     		
     		//changes the rotor counter index
@@ -314,10 +334,15 @@ public class enigma extends Application {
     			output = false;
     		}
     	}
-
-    	
     	return output;
     }
+    
+    
+    //reverses the signal
+//    public static string reverseSignal(int index) {
+//    	
+//    	
+//    }
     
     
     
