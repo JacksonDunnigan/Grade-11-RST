@@ -250,26 +250,51 @@ public class enigma extends Application {
     	
     	//converts the key into a number from 1 to 25
     	char key =  input.charAt(0);
-    	int index = key-'A';
-    	String letter;
+    	String letter = ""+key;
     	
-    	//changes the letter
-    	letter = rotor_1.get(index);   
-    	letter = rotor_2.get(index);
-    	letter = rotor_3.get(index);
-    
+    	System.out.print(input);
+
+    	//changes the letter (works)
+    	letter = rotor_1.get(letter.charAt(0)-'A');   
+    	System.out.print(letter);
+    	//a to e
+    	letter = rotor_2.get(letter.charAt(0)-'A');
+    	System.out.print(letter);
+    	//e to s
+    	letter = rotor_3.get(letter.charAt(0)-'A');
+    	System.out.print(letter);
+    	//s to g
+    	
+    	
     	//shifts the rotors
         if (rotorChange(rotor_1,true)) {
         	if (rotorChange(rotor_2,true)) {
     			rotorChange(rotor_3,true);
         	}
         }
-
+        
+        //dont works
+       
+        //reverseSignal();
+        
     	//reverses the signal
-    	letter = rotor_3.get(index);  
-    	letter = rotor_2.get(index);  
-    	letter = rotor_1.get(index);  
-    	//letter = rotor_1.get(rotor_1.indexOf(letter)); 
+    	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
+    	System.out.print(letter);
+    	
+    	letter = alphabet_sorted[rotor_2.indexOf(letter)];   
+    	System.out.print(letter);
+    	
+    	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
+    	System.out.print(letter);
+    	
+
+//    	letter = rotor_2.get(letter.charAt(0)-'A');
+//    	System.out.print(letter);
+//    	
+//    	letter = rotor_1.get(letter.charAt(0)-'A');
+//    	System.out.print(letter);
+    	
+    	
     	//returns the changed letters
     	return letter;
     }
