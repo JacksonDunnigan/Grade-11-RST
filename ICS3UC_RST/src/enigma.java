@@ -287,14 +287,6 @@ public class enigma extends Application {
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
     	System.out.print(letter);
     	
-
-//    	letter = rotor_2.get(letter.charAt(0)-'A');
-//    	System.out.print(letter);
-//    	
-//    	letter = rotor_1.get(letter.charAt(0)-'A');
-//    	System.out.print(letter);
-    	
-    	
     	//returns the changed letters
     	return letter;
     }
