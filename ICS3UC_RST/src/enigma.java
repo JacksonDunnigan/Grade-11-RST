@@ -273,9 +273,6 @@ public class enigma extends Application {
         	}
         }
         
-        //dont works
-       
-        //reverseSignal();
         
     	//reverses the signal
     	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
@@ -286,13 +283,6 @@ public class enigma extends Application {
     	
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
     	System.out.print(letter);
-    	
-
-//    	letter = rotor_2.get(letter.charAt(0)-'A');
-//    	System.out.print(letter);
-//    	
-//    	letter = rotor_1.get(letter.charAt(0)-'A');
-//    	System.out.print(letter);
     	
     	
     	//returns the changed letters
@@ -367,13 +357,7 @@ public class enigma extends Application {
     	return output;
     }
     
-    
-    //reverses the signal
-//    public static string reverseSignal(int index) {
-//    	
-//    	
-//    }
-    
+ 
     
     
 	// finds a random number between 2 inputs
