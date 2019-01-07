@@ -25,7 +25,15 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
  
 public class enigma extends Application {
@@ -61,12 +69,19 @@ public class enigma extends Application {
 	static String[] rotor_VI = new String[] {"J","P","G","V","O","U","M","F","Y","Q","B","E","N","H","Z","R","D","K","A","S","X","L","I","C","T","W"};
 	static String[] rotor_VII = new String[] {"N","Z","J","H","G","R","C","X","M","Y","S","W","B","O","U","F","A","I","V","L","P","E","K","Q","D","T"};
 	static String[] rotor_VIII = new String[] {"F","K","Q","H","T","L","X","O","C","B","J","S","P","D","Z","R","A","M","E","W","N","I","U","Y","G","V"};
-
+	
+	
+	static String[] reflector_rotor = new String[] {"V","X","A","R","F","H","W","N","E","Z","P","U","T","O","J","L","B","Y","C","Q","S","M","K","D","G","I"};
+	
 	//reflector list
-	static String[][] reflector = new String[][] {
-		{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}, 
-		{"V","X","A","R","F","H","W","N","E","Z","P","U","T","O","J","L","B","Y","C","Q","S","M","K","D","G","I"}
-	};
+	static ArrayList<String> reflector = new ArrayList<String>(Arrays.asList(reflector_rotor));
+//		{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}, 
+//		{"V","X","A","R","F","H","W","N","E","Z","P","U","T","O","J","L","B","Y","C","Q","S","M","K","D","G","I"}
+//	
+//	}); 
+//		{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}, 
+//		{"V","X","A","R","F","H","W","N","E","Z","P","U","T","O","J","L","B","Y","C","Q","S","M","K","D","G","I"}
+	
 
 	//turns the rotor arrays into array lists
 	static ArrayList<String> rotor_1 = new ArrayList<String>(Arrays.asList(rotor_I));	
@@ -134,12 +149,23 @@ public class enigma extends Application {
     class Step extends AnimationTimer {
         @Override
         public void handle(long now) {
-        	
-        	
+        	//updates the combo boxes
+//        	for (int i = 0; i <box_list.length; i++) {
+//        		box_list[i].setOnAction(new EventHandler<ActionEvent>()
+//	        	{
+//	        	    @Override 
+//	        	    public void handle(ActionEvent e) 
+//	        	    {
+//	        	    	while (current_rotors.get(i)[0]!=box_list[i].getValue()) {
+//	        	    		rotor_change(current_rotors.get(i),true);
+//	        	    	}
+//	        	        current_rotors.get(i) System.out.print("HELLO");
+//	        	    }
+//	        	});
+//        	}
         }
     }
 
-    
     //takes input
     class UserKeyInput implements EventHandler<KeyEvent> {
 
@@ -267,32 +293,32 @@ public class enigma extends Application {
     	//converts the key into a number from 1 to 25
     	char key =  input.charAt(0);
     	String letter = ""+key;
-    	
-    	System.out.print(input);
 
     	//changes the letter (works)
     	letter = rotor_1.get(letter.charAt(0)-'A');   
-    	System.out.print(letter);
-    	//a to e
     	letter = rotor_2.get(letter.charAt(0)-'A');
-    	System.out.print(letter);
-    	//e to s
     	letter = rotor_3.get(letter.charAt(0)-'A');
-    	System.out.print(letter);
-    	//s to g
+
     	
         //reverses the signal
-    	
+    	if (reflector.indexOf(letter)>12) {
+    		letter = reflector.get(reflector.indexOf(letter)-13);   
+    	}
+    	else 
+    	{
+    		letter = reflector.get(reflector.indexOf(letter)+13);   
+    	}
+    	//System.out.print(letter);
     	
     	//sends the signal background
     	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
-    	System.out.print(letter);
+    	//System.out.print(letter);
     	
     	letter = alphabet_sorted[rotor_2.indexOf(letter)];   
-    	System.out.print(letter);
+    	//System.out.print(letter);
     	
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
-    	System.out.print(letter);
+    	//System.out.print(letter);
     	
     	
     	//shifts the rotors
@@ -301,6 +327,7 @@ public class enigma extends Application {
     			rotorChange(rotor_3,true);
         	}
         }
+        
     	//returns the changed letters
     	return letter;
     }
@@ -372,14 +399,7 @@ public class enigma extends Application {
     	}
     	return output;
     }
-    
-    
-    //reverses the signal
-//    public static string reverseSignal(int index) {
-//    	
-//    	
-//    }
-    
+
     
     
 	// finds a random number between 2 inputs
