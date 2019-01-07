@@ -62,6 +62,12 @@ public class enigma extends Application {
 	static String[] rotor_VII = new String[] {"N","Z","J","H","G","R","C","X","M","Y","S","W","B","O","U","F","A","I","V","L","P","E","K","Q","D","T"};
 	static String[] rotor_VIII = new String[] {"F","K","Q","H","T","L","X","O","C","B","J","S","P","D","Z","R","A","M","E","W","N","I","U","Y","G","V"};
 
+	//reflector list
+	static String[][] reflector = new String[][] {
+		{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}, 
+		{"V","X","A","R","F","H","W","N","E","Z","P","U","T","O","J","L","B","Y","C","Q","S","M","K","D","G","I"}
+	};
+
 	//turns the rotor arrays into array lists
 	static ArrayList<String> rotor_1 = new ArrayList<String>(Arrays.asList(rotor_I));	
 	static ArrayList<String> rotor_2 = new ArrayList<String>(Arrays.asList(rotor_II));	
@@ -208,7 +214,17 @@ public class enigma extends Application {
     		rotor_list[2-i].setFont(small_font);
     		rotor_list[2-i].setFill(Color.WHITE);
     	}
-    	
+    	rect = new Rectangle();
+    	rect.setY(170);
+    	rect.setX(320);
+    	rect.setFill(LIGHT_GREY);
+    	rect.setWidth(70); 
+		rect.setHeight(150);
+		rect.setArcWidth(40);
+		rect.setArcHeight(40);
+		rect.setEffect(black_shadow);
+		
+    	canvas.getChildren().addAll(rect);
     	canvas.getChildren().addAll(box_list);
 		
 		
@@ -265,19 +281,10 @@ public class enigma extends Application {
     	System.out.print(letter);
     	//s to g
     	
+        //reverses the signal
     	
-    	//shifts the rotors
-        if (rotorChange(rotor_1,true)) {
-        	if (rotorChange(rotor_2,true)) {
-    			rotorChange(rotor_3,true);
-        	}
-        }
-        
-        //dont works
-       
-        //reverseSignal();
-        
-    	//reverses the signal
+    	
+    	//sends the signal background
     	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
     	System.out.print(letter);
     	
@@ -287,6 +294,13 @@ public class enigma extends Application {
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
     	System.out.print(letter);
     	
+    	
+    	//shifts the rotors
+        if (rotorChange(rotor_1,true)) {
+        	if (rotorChange(rotor_2,true)) {
+    			rotorChange(rotor_3,true);
+        	}
+        }
     	//returns the changed letters
     	return letter;
     }
