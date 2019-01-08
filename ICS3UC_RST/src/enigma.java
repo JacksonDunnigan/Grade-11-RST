@@ -150,33 +150,47 @@ public class enigma extends Application {
         		final int index = i;
         		
         		//gets the current rotor and combo box for letters
-        		ArrayList<String> current_rotor_position = current_rotors.get(i-1);
-        		ComboBox<String> current_key_box = box_list[3-i];	
+        		//ArrayList<String> current_rotor_position = current_rotors.get(i-1);
+        		
+        		//ComboBox<String> curent_rotor_box = rotor_box_list[3-i];
         		
         		//changes the rotor position 
-        		current_key_box.setOnAction(new EventHandler<ActionEvent>()
+        		box_list[3-i].setOnAction(new EventHandler<ActionEvent>()
 	        	{
         			@Override 
 	        	    public void handle(ActionEvent e) 
 	        	    { 
-        				while (!current_rotor_position.get(0).equals(current_key_box.getValue())) {
-        					rotorChange(current_rotor_position,true,false);
+        				while (!current_rotors.get(index-1).get(0).equals(box_list[3-index].getValue())) {
+        					rotorChange(current_rotors.get(index-1),true,false);
         				}
 	        	    }
 	        	});
         		
-        		//gets the current rotor and combo box
-        		//ArrayList<String> current_rotor = current_rotors.get(i-1);
-        		ComboBox<String> curent_rotor_box = rotor_box_list[3-i];
-        		
         		//changes the rotors 
-        		curent_rotor_box.setOnAction(new EventHandler<ActionEvent>()
+        		rotor_box_list[3-i].setOnAction(new EventHandler<ActionEvent>()
 	        	{
         			@Override 
 	        	    public void handle(ActionEvent e) 
 	        	    {
-        				current_rotors.set(index, (ArrayList<String>) Arrays.asList((rotor_value_list[rotor_name_list.indexOf(curent_rotor_box.getValue())])));
-        				//box_list[3-index].setValue(current_rotors.get(index));
+        				switch(3-index) {
+        					case 2:
+        						System.out.print("clicked");
+        						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
+        						//box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
+        						current_rotors.set(0, rotor_1);
+        						rotor_counter_1=0;
+        						break;
+        					case 1:
+        						rotor_2=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
+        						current_rotors.set(0, rotor_2);
+        						rotor_counter_2=0;
+        						break;
+        					case 0:
+        						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));\
+        						current_rotors.set(0, rotor_3);
+        						rotor_counter_3=0;
+        						break;
+        				}
 	        	    }
 	        	});
         	}
@@ -250,14 +264,16 @@ public class enigma extends Application {
      		//adds menus to change the rotors positions
      		ObservableList<String> rotor_options =FXCollections.observableArrayList(rotor_name_list);//FXCollections.observableArrayList(current_rotors.get(2-i));//.getName();
      		rotor_box_list[i] = new ComboBox<String>(rotor_options);
-     		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-198+i*140);
+     		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-205+i*140);
      		rotor_box_list[i].setLayoutY(85); 
+     		rotor_box_list[i].setValue(rotor_name_list.get(2-i));
      		
      		//adds menus to change the rotors
      		ObservableList<String> options = FXCollections.observableArrayList(current_rotors.get(2-i));
      		box_list[i] = new ComboBox<String>(options);
      		box_list[i].setLayoutX(SCREEN_WIDTH/2-180+i*140);
      		box_list[i].setLayoutY(270);
+     		box_list[i].setValue(current_rotors.get(i).get(0));
      		
     	    //creates text that represents rotor index's
     		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 240, current_rotors.get(i).get(0));
