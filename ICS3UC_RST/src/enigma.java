@@ -25,7 +25,15 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
  
 public class enigma extends Application {
@@ -47,7 +55,8 @@ public class enigma extends Application {
 	static Text[] text_list = new Text[LETTER_AMOUNT];
 	static Text[] rotor_list = new Text[3];
 	static ComboBox<String>[] box_list = new ComboBox[3];
-
+	static ComboBox<String>[] rotor_box_list = new ComboBox[3];
+	
 	//defining the alphabet
 	static String[] alphabet =  new String[]{"Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Z","X","C","V","B","N","M"};
 	static String[] alphabet_sorted =  new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
@@ -61,6 +70,15 @@ public class enigma extends Application {
 	static String[] rotor_VI = new String[] {"J","P","G","V","O","U","M","F","Y","Q","B","E","N","H","Z","R","D","K","A","S","X","L","I","C","T","W"};
 	static String[] rotor_VII = new String[] {"N","Z","J","H","G","R","C","X","M","Y","S","W","B","O","U","F","A","I","V","L","P","E","K","Q","D","T"};
 	static String[] rotor_VIII = new String[] {"F","K","Q","H","T","L","X","O","C","B","J","S","P","D","Z","R","A","M","E","W","N","I","U","Y","G","V"};
+	static String[] reflector_rotor = new String[] {"V","X","A","R","F","H","W","N","E","Z","P","U","T","O","J","L","B","Y","C","Q","S","M","K","D","G","I"};
+	
+	//list of rotor names and values
+	static String[] temp_name_list = new String[] { "rotor_I","rotor_II","rotor_III","rotor_IV","rotor_V","rotor_VI","rotor_VII","rotor_VIII"};
+	static ArrayList<String> rotor_name_list = new ArrayList<String>(Arrays.asList(temp_name_list));
+	static String[][] rotor_value_list = new String[][] {rotor_I,rotor_II,rotor_III,rotor_IV,rotor_V,rotor_VI,rotor_VII,rotor_VIII};
+	
+	//reflector list
+	static ArrayList<String> reflector = new ArrayList<String>(Arrays.asList(reflector_rotor));
 
 	//turns the rotor arrays into array lists
 	static ArrayList<String> rotor_1 = new ArrayList<String>(Arrays.asList(rotor_I));	
@@ -101,7 +119,6 @@ public class enigma extends Application {
         current_rotors.add(rotor_2);
         current_rotors.add(rotor_3);
         
-        
         //generates the interface
         generateInterface();
 
@@ -128,12 +145,45 @@ public class enigma extends Application {
     class Step extends AnimationTimer {
         @Override
         public void handle(long now) {
-        	
-        	
+        	//updates the combo boxes
+        	for (int i = 3; i > 0; i--) {
+        		final int index = i;
+        		
+        		//gets the current rotor and combo box for letters
+        		ArrayList<String> current_rotor_position = current_rotors.get(i-1);
+        		ComboBox<String> current_key_box = box_list[3-i];	
+        		
+        		//changes the rotor position 
+        		current_key_box.setOnAction(new EventHandler<ActionEvent>()
+	        	{
+        			@Override 
+	        	    public void handle(ActionEvent e) 
+	        	    { 
+        				while (!current_rotor_position.get(0).equals(current_key_box.getValue())) {
+        					rotorChange(current_rotor_position,true,false);
+        				}
+	        	    }
+	        	});
+        		
+        		//gets the current rotor and combo box
+        		//ArrayList<String> current_rotor = current_rotors.get(i-1);
+        		ComboBox<String> curent_rotor_box = rotor_box_list[3-i];
+        		
+        		//changes the rotors 
+        		curent_rotor_box.setOnAction(new EventHandler<ActionEvent>()
+	        	{
+        			@Override 
+	        	    public void handle(ActionEvent e) 
+	        	    {
+        				current_rotors.set(index, (ArrayList<String>) Arrays.asList((rotor_value_list[rotor_name_list.indexOf(curent_rotor_box.getValue())])));
+        				//box_list[3-index].setValue(current_rotors.get(index));
+	        	    }
+	        	});
+        	}
         }
     }
-
     
+ 
     //takes input
     class UserKeyInput implements EventHandler<KeyEvent> {
 
@@ -170,10 +220,11 @@ public class enigma extends Application {
     	
      	//generates ellipses and text to go in them
     	for (int i = 0; i < 3; i++) {
+    		
     		//creates the ellipses
     		rotor = new Ellipse();
     		rotor.setCenterX(SCREEN_WIDTH/2-150+(i*140)); 
-    		rotor.setCenterY(240); 
+    		rotor.setCenterY(260); 
     		rotor.setRadiusX(50); 
     		rotor.setRadiusY(130);
     		rotor.setEffect(black_shadow);
@@ -182,7 +233,7 @@ public class enigma extends Application {
     		canvas.getChildren().addAll(rotor);
     		
     		//labels the rotors
-     		text = new Text(SCREEN_WIDTH/2-190+i*140, 80, "Rotor "+(3-i));
+     		text = new Text(SCREEN_WIDTH/2-190+i*140, 70, "Rotor "+(3-i));
      		text.setFont(small_font);
      		text.setFill(Color.WHITE);
      		canvas.getChildren().addAll(text);
@@ -197,52 +248,67 @@ public class enigma extends Application {
      		canvas.getChildren().addAll(label);
      		
      		//adds menus to change the rotors positions
+     		ObservableList<String> rotor_options =FXCollections.observableArrayList(rotor_name_list);//FXCollections.observableArrayList(current_rotors.get(2-i));//.getName();
+     		rotor_box_list[i] = new ComboBox<String>(rotor_options);
+     		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-198+i*140);
+     		rotor_box_list[i].setLayoutY(85); 
+     		
+     		//adds menus to change the rotors
      		ObservableList<String> options = FXCollections.observableArrayList(current_rotors.get(2-i));
      		box_list[i] = new ComboBox<String>(options);
      		box_list[i].setLayoutX(SCREEN_WIDTH/2-180+i*140);
      		box_list[i].setLayoutY(270);
-
      		
     	    //creates text that represents rotor index's
     		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 240, current_rotors.get(i).get(0));
     		rotor_list[2-i].setFont(small_font);
     		rotor_list[2-i].setFill(Color.WHITE);
     	}
-    	
+    	canvas.getChildren().addAll(rotor_box_list);
     	canvas.getChildren().addAll(box_list);
-		
-		
+		    	
+//    	for (int i = 0; i < 2; i++) {
+//	    	rect = new Rectangle();
+//	    	rect.setY(170);
+//	    	rect.setX(350+i*510);
+//	    	rect.setFill(LIGHT_GREY);
+//	    	rect.setWidth(50); 
+//			rect.setHeight(150);
+//			rect.setArcWidth(40);
+//			rect.setArcHeight(40);
+//			rect.setEffect(black_shadow);
+//			
+//	    	canvas.getChildren().addAll(rect);
+//    	}
+    	
     	//generates circles and keys
         for (int i = 0; i < button_list.length; i++) {
-            	int x;
-            	double y;
-            	
-            	if (i < 9) {
-            		x = SCREEN_WIDTH/2-340+(i*80)+CIRCLE_SIZE/2;
-            		y = SCREEN_HEIGHT*0.65;
-            	}
-            	else if (i >=9 && i < 17) {
-            		x = SCREEN_WIDTH/2-1020+(i*80)+CIRCLE_SIZE/2;
-            		y = SCREEN_HEIGHT*0.65+80;
-            	}
-            	else {
-            		x = SCREEN_WIDTH/2-1700+(i*80)+CIRCLE_SIZE/2;
-            		y = SCREEN_HEIGHT*0.65+160;
-            	}
-            	
-            	
-            	//creates the circle and gives the circles a message
-        		button_list[i] = new Circle(x, y, CIRCLE_SIZE, Color.BLACK);
-        		button_list[i].setEffect(black_shadow);
-        		button_list[i].setStroke(LIGHT_GREY);
-        		button_list[i].setStrokeWidth(3);
-        		
-            	text_list[i] = new Text(x-CIRCLE_SIZE*0.45, y+CIRCLE_SIZE*0.4, alphabet[i]);
-            	text_list[i].setFont(medium_font);
-            	text_list[i].setFill(LIGHT_GREY);
-            	
+        	int x;
+        	double y;
+        	
+        	if (i < 9) {
+        		x = SCREEN_WIDTH/2-340+(i*80)+CIRCLE_SIZE/2;
+        		y = SCREEN_HEIGHT*0.65;
+        	}
+        	else if (i >=9 && i < 17) {
+        		x = SCREEN_WIDTH/2-1020+(i*80)+CIRCLE_SIZE/2;
+        		y = SCREEN_HEIGHT*0.65+80;
+        	}
+        	else {
+        		x = SCREEN_WIDTH/2-1700+(i*80)+CIRCLE_SIZE/2;
+        		y = SCREEN_HEIGHT*0.65+160;
+        	}
+        	
+        	//creates the circle and gives the circles a message
+    		button_list[i] = new Circle(x, y, CIRCLE_SIZE, Color.BLACK);
+    		button_list[i].setEffect(black_shadow);
+    		button_list[i].setStroke(LIGHT_GREY);
+    		button_list[i].setStrokeWidth(3);
+    		
+        	text_list[i] = new Text(x-CIRCLE_SIZE*0.45, y+CIRCLE_SIZE*0.4, alphabet[i]);
+        	text_list[i].setFont(medium_font);
+        	text_list[i].setFill(LIGHT_GREY);
         }
-  
     }
     
     //passes the letter through the rotors and updates the rotors positions
@@ -252,47 +318,39 @@ public class enigma extends Application {
     	char key =  input.charAt(0);
     	String letter = ""+key;
     	
-    	System.out.print(input);
-
-    	//changes the letter (works)
+    	//sends the signal through the rotors
     	letter = rotor_1.get(letter.charAt(0)-'A');   
-    	System.out.print(letter);
-    	//a to e
     	letter = rotor_2.get(letter.charAt(0)-'A');
-    	System.out.print(letter);
-    	//e to s
     	letter = rotor_3.get(letter.charAt(0)-'A');
-    	System.out.print(letter);
-    	//s to g
+    	
+        //reverses the signal
+    	if (reflector.indexOf(letter)>12) {
+    		letter = reflector.get(reflector.indexOf(letter)-13);   
+    	}
+    	else 
+    	{
+    		letter = reflector.get(reflector.indexOf(letter)+13);   
+    	}
+    	    	
+    	//reverses the signal
+    	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
+    	letter = alphabet_sorted[rotor_2.indexOf(letter)];   
+    	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
     	
     	
     	//shifts the rotors
-        if (rotorChange(rotor_1,true)) {
-        	if (rotorChange(rotor_2,true)) {
-    			rotorChange(rotor_3,true);
+        if (rotorChange(rotor_1,true,true)) {
+        	if (rotorChange(rotor_2,true,true)) {
+    			rotorChange(rotor_3,true,true);
         	}
         }
-        
-        
-    	//reverses the signal
-    	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
-    	System.out.print(letter);
-    	
-    	letter = alphabet_sorted[rotor_2.indexOf(letter)];   
-    	System.out.print(letter);
-    	
-    	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
-    	System.out.print(letter);
-    	
-    	
     	//returns the changed letters
     	return letter;
     }
-    
-    
+
     
     //shifts the letters
-    public static boolean rotorChange(ArrayList<String> index, boolean real) {
+    public static boolean rotorChange(ArrayList<String> index, boolean real, boolean shift) {
 
     	String val;
     	boolean output = false;
@@ -308,14 +366,15 @@ public class enigma extends Application {
     		rotor_list[0].setText(current_rotors.get(0).get(0)); 
     		
     		//changes the rotor counter index
-    		if (rotor_counter_1+1>25) {
+    		if (shift) {
+    			if (rotor_counter_1+1>25) {
     			rotor_counter_1 = 0;
     			output = true;
-    		} else {
-    			rotor_counter_1 += 1;
-    			output = false;
+	    		} else {
+	    			rotor_counter_1 += 1;
+	    			output = false;
+	    		}
     		}
-    		
     		
     	//rotates the second rotor
     	} else if  (index == rotor_2){
@@ -327,14 +386,15 @@ public class enigma extends Application {
     		rotor_list[1].setText(current_rotors.get(1).get(0)); 
     		
     		//changes the rotor counter index
-    		if (rotor_counter_2+1>25) {
-    			rotor_counter_2 = 0;
-    			output = true;
-    		} else {
-    			rotor_counter_2 += 1;
-    			output = false;
+    		if (shift) {
+	    		if (rotor_counter_2+1>25) {
+	    			rotor_counter_2 = 0;
+	    			output = true;
+	    		} else {
+	    			rotor_counter_2 += 1;
+	    			output = false;
+	    		}
     		}
-    	
     		
     	//rotates the third rotor
     	} else if  (index == rotor_3){
@@ -346,20 +406,19 @@ public class enigma extends Application {
     		rotor_list[2].setText(current_rotors.get(2).get(0)); 
     		
     		//changes the rotor counter index
-    		if (rotor_counter_3+1>25) {
-    			rotor_counter_3 = 0;
-    			output = true;
-    		} else {
-    			rotor_counter_3 += 1;
-    			output = false;
-    		} 
+    		if (shift) {
+	    		if (rotor_counter_3+1>25) {
+	    			rotor_counter_3 = 0;
+	    			output = true;
+	    		} else {
+	    			rotor_counter_3 += 1;
+	    			output = false;
+	    		} 
+    		}
     	}
     	return output;
     }
-    
- 
-    
-    
+
 	// finds a random number between 2 inputs
 	public static int randomRange(int a, int b) {
 	    int highNum = Math.max(a, b);
@@ -367,9 +426,7 @@ public class enigma extends Application {
 	    int range = highNum - lowNum + 1;
 	    return (int) (Math.random() * range) + lowNum;
 	}
-	
-	
-	
+
 	
     //makes sure the player presses a letter of the alphabet
     public static boolean validKey(String key, String[] alphabet) {
