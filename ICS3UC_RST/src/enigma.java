@@ -25,6 +25,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.util.Collections;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -151,7 +152,6 @@ public class enigma extends Application {
         		
         		//gets the current rotor and combo box for letters
         		//ArrayList<String> current_rotor_position = current_rotors.get(i-1);
-        		
         		//ComboBox<String> curent_rotor_box = rotor_box_list[3-i];
         		
         		//changes the rotor position 
@@ -172,12 +172,18 @@ public class enigma extends Application {
         			@Override 
 	        	    public void handle(ActionEvent e) 
 	        	    {
+        				
         				switch(3-index) {
         					case 2:
-        						System.out.print("clicked");
+        						
+        						rotor_1.clear();
         						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
-        						//box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
         						current_rotors.set(0, rotor_1);
+        						System.out.print(rotor_1);
+        						if (!box_list[3-index].getItems().containsAll(rotor_1)) {
+        							box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
+        						}
+        						//box_list[3-index].requestFocus();
         						rotor_counter_1=0;
         						break;
         					case 1:
@@ -186,7 +192,7 @@ public class enigma extends Application {
         						rotor_counter_2=0;
         						break;
         					case 0:
-        						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));\
+        						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_3);
         						rotor_counter_3=0;
         						break;
@@ -262,7 +268,7 @@ public class enigma extends Application {
      		canvas.getChildren().addAll(label);
      		
      		//adds menus to change the rotors positions
-     		ObservableList<String> rotor_options =FXCollections.observableArrayList(rotor_name_list);//FXCollections.observableArrayList(current_rotors.get(2-i));//.getName();
+     		ObservableList<String> rotor_options = FXCollections.observableArrayList(rotor_name_list);//FXCollections.observableArrayList(current_rotors.get(2-i));//.getName();
      		rotor_box_list[i] = new ComboBox<String>(rotor_options);
      		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-205+i*140);
      		rotor_box_list[i].setLayoutY(85); 
