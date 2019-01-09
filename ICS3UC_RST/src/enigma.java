@@ -58,6 +58,10 @@ public class enigma extends Application {
 	static ComboBox<String>[] box_list = new ComboBox[3];
 	static ComboBox<String>[] rotor_box_list = new ComboBox[3];
 	
+	//defines text feild to hold the input and output
+	TextField input_text_feild = new TextField ();
+	TextField output_text_feild = new TextField ();
+	
 	//defining the alphabet
 	static String[] alphabet =  new String[]{"Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Z","X","C","V","B","N","M"};
 	static String[] alphabet_sorted =  new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
@@ -122,11 +126,6 @@ public class enigma extends Application {
         
         //generates the interface
         generateInterface();
-
-        //adds everything to a group
-        canvas.getChildren().addAll(button_list);
-        canvas.getChildren().addAll(text_list);
-        canvas.getChildren().addAll(rotor_list);
         
         //creates a timer and starts it
         AnimationTimer timer = new Step();
@@ -142,68 +141,78 @@ public class enigma extends Application {
     }
     
     
-    //manages input, drawing and animation
+    //manages input and updates combo boxes
     class Step extends AnimationTimer {
-        @Override
+
+		@Override
         public void handle(long now) {
         	//updates the combo boxes
         	for (int i = 3; i > 0; i--) {
         		final int index = i;
         		
-        		//gets the current rotor and combo box for letters
-        		//ArrayList<String> current_rotor_position = current_rotors.get(i-1);
-        		//ComboBox<String> curent_rotor_box = rotor_box_list[3-i];
+   
         		
-        		//changes the rotor position 
-        		box_list[3-i].setOnAction(new EventHandler<ActionEvent>()
-	        	{
-        			@Override 
-	        	    public void handle(ActionEvent e) 
-	        	    { 
-        				while (!current_rotors.get(index-1).get(0).equals(box_list[3-index].getValue())) {
-        					rotorChange(current_rotors.get(index-1),true,false);
-        				}
-	        	    }
-	        	});
-        		
-        		//changes the rotors 
+        		//changes the current rotors in each slot 
         		rotor_box_list[3-i].setOnAction(new EventHandler<ActionEvent>()
 	        	{
         			@Override 
 	        	    public void handle(ActionEvent e) 
-	        	    {
-        				
+	        	    {        				
         				switch(3-index) {
         					case 2:
-        						
         						rotor_1.clear();
         						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_1);
-        						System.out.print(rotor_1);
-        						if (!box_list[3-index].getItems().containsAll(rotor_1)) {
-        							box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
-        						}
-        						//box_list[3-index].requestFocus();
+        						box_list[3-index].setOnAction(null);
+        						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
+        						box_list[3-index].setOnAction(new ChangeRotorIndex(index));
         						rotor_counter_1=0;
         						break;
         					case 1:
         						rotor_2=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_2);
+        						box_list[3-index].setOnAction(null);
+        						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_2));
+        						box_list[3-index].setOnAction(new ChangeRotorIndex(index));
         						rotor_counter_2=0;
         						break;
         					case 0:
         						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_3);
+        						box_list[3-index].setOnAction(null);
+        						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_3));
+        						box_list[3-index].setOnAction(new ChangeRotorIndex(index));
         						rotor_counter_3=0;
         						break;
         				}
 	        	    }
 	        	});
+         		//changes the rotors position that shows up on the screen
+    			rotor_box_list[3-index].setOnAction(null); 		
+        		box_list[3-i].setOnAction(new ChangeRotorIndex(index));
         	}
         }
     }
     
- 
+    //orients the rotors when a setting is changed
+    private final class ChangeRotorIndex implements EventHandler<ActionEvent> {
+		private final int index;
+
+		private ChangeRotorIndex(int index) {
+			this.index = index;
+		}
+
+		@Override 
+		public void handle(ActionEvent e) 
+		{ 
+
+			while (!current_rotors.get(index-1).get(0).equals(box_list[3-index].getValue())) {
+				rotorChange(current_rotors.get(index-1),true,false);
+			}
+			//box_list[3-index].setOnAction(null);
+		}
+	}
+    
     //takes input
     class UserKeyInput implements EventHandler<KeyEvent> {
 
@@ -286,23 +295,7 @@ public class enigma extends Application {
     		rotor_list[2-i].setFont(small_font);
     		rotor_list[2-i].setFill(Color.WHITE);
     	}
-    	canvas.getChildren().addAll(rotor_box_list);
-    	canvas.getChildren().addAll(box_list);
-		    	
-//    	for (int i = 0; i < 2; i++) {
-//	    	rect = new Rectangle();
-//	    	rect.setY(170);
-//	    	rect.setX(350+i*510);
-//	    	rect.setFill(LIGHT_GREY);
-//	    	rect.setWidth(50); 
-//			rect.setHeight(150);
-//			rect.setArcWidth(40);
-//			rect.setArcHeight(40);
-//			rect.setEffect(black_shadow);
-//			
-//	    	canvas.getChildren().addAll(rect);
-//    	}
-    	
+
     	//generates circles and keys
         for (int i = 0; i < button_list.length; i++) {
         	int x;
@@ -330,8 +323,42 @@ public class enigma extends Application {
         	text_list[i] = new Text(x-CIRCLE_SIZE*0.45, y+CIRCLE_SIZE*0.4, alphabet[i]);
         	text_list[i].setFont(medium_font);
         	text_list[i].setFill(LIGHT_GREY);
+        	
         }
+        
+        //input text
+    	input_text_feild.setEditable(false);
+    	input_text_feild.setText("input");
+    	input_text_feild.setEventDispatcher(null);
+    	input_text_feild.setLayoutX(875);
+    	input_text_feild.setLayoutY(150);
+    	input_text_feild.setMaxWidth(100);
+    	input_text_feild.deselect();
+    	
+    	
+    	//output text
+    	output_text_feild.setEditable(false);
+    	output_text_feild.setText("output");
+    	output_text_feild.setEventDispatcher(null);
+    	output_text_feild.setLayoutX(875);
+    	output_text_feild.setLayoutY(200);
+    	output_text_feild.setMaxWidth(100);//(25);
+    	output_text_feild.deselect();
+
+        
+        
+    	//adds things to the canvas
+    	canvas.getChildren().addAll(input_text_feild);
+    	canvas.getChildren().addAll(output_text_feild);
+    	canvas.getChildren().addAll(rotor_box_list);
+    	canvas.getChildren().addAll(box_list);
+        canvas.getChildren().addAll(button_list);
+        canvas.getChildren().addAll(text_list);
+        canvas.getChildren().addAll(rotor_list);
+        
     }
+    
+    
     
     //passes the letter through the rotors and updates the rotors positions
     public static String rotorUpdate(String input){
@@ -370,6 +397,7 @@ public class enigma extends Application {
     	return letter;
     }
 
+    
     
     //shifts the letters
     public static boolean rotorChange(ArrayList<String> index, boolean real, boolean shift) {
@@ -452,8 +480,8 @@ public class enigma extends Application {
 	
     //makes sure the player presses a letter of the alphabet
     public static boolean validKey(String key, String[] alphabet) {
+    	
     	//converts the alphabet to a list
-
 		for (int i = 0; i<alphabet.length; i++) {
 	    	if (key.equals(alphabet[i])) {
 				return true;
