@@ -158,16 +158,17 @@ public class enigma extends Application {
         	for (int i = 3; i > 0; i--) {
         		final int index = i;
         
- 
-				//box_list[3-i].setOnAction(null); 
+         		rotor_box_list[3-index].setOnAction(null);	
+        		box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+				box_list[3-index].setOnAction(null); 
 				//for (int j = 3; j>0; j--) 
         		//changes the current rotors in each slot 
-        		rotor_box_list[3-i].setOnAction(new EventHandler<ActionEvent>()
+        		rotor_box_list[3-index].setOnAction(new EventHandler<ActionEvent>()
 	        	{
         			@Override 
 	        	    public void handle(ActionEvent e) 
 	        	    {      
-
+						//box_list[3-index].setOnAction(null);
         				//box_list[3-index].setOnAction(null);
         				switch(3-index) {
         					
@@ -175,7 +176,7 @@ public class enigma extends Application {
         						rotor_1.clear();
         						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_1);
-        						//box_list[3-index].setOnAction(null);
+        						//
         						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
         				//box_list[3-index].setOnAction(new ChangeRotorIndex(index));
         						rotor_counter_1=0;
@@ -201,10 +202,11 @@ public class enigma extends Application {
 	        	    }
         			
 	        	});
-
-        		//changes the rotors position that shows up on the screen        
-        		rotor_box_list[3-index].setOnAction(null);	
+        		
         		box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+        		//rotor_box_list[3-index].setOnAction(null);	
+        		//changes the rotors position that shows up on the screen        
+
         		//box_list[3-index].setOnAction(null);
         		//rotor_box_list[3-index].setOnAction(null);	
         		//rotor_box_list[3-index].setOnAction(new ChangeRotorIndex(index));
@@ -215,11 +217,11 @@ public class enigma extends Application {
                 	input_text_feild.setText("input");
                		output_text_feild.setText("output");
                		//resets the dials
-                	//for (int j = 3; j > 0; j--) {
-	        		//	while (!current_rotors.get(j-1).get(0).equals(box_list[3-j].getValue())) {
-	        		//		rotorChange(current_rotors.get(j-1),true,false);
-	        		//	}
-                	//}
+                	for (int j = 3; j > 0; j--) {
+	        			while (!current_rotors.get(j-1).get(0).equals(box_list[3-j].getValue())) {
+	        				rotorChange(current_rotors.get(j-1),true,false);
+	        			}
+                	}
                 });
                 
                 //toggles the plugboard editing
