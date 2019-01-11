@@ -50,6 +50,7 @@ public class enigma extends Application {
 	//initializes the font
     static Font medium_font = Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 35);
 	static Font small_font = Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 24);
+	static Font extra_small_font = Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 18);
 	
 	//makes lists that hold objects
 	static Circle[] button_list = new Circle[LETTER_AMOUNT];
@@ -61,6 +62,13 @@ public class enigma extends Application {
 	//defines text feild to hold the input and output
 	TextField input_text_feild = new TextField ();
 	TextField output_text_feild = new TextField ();
+    Button reset_button = new Button("Reset");
+    Button help_button = new Button("Help");
+    
+    //plugboard variables
+	Rectangle dark_rect = new Rectangle();
+    Button plugboard_button = new Button("Edit Plugboard");
+	Boolean edit_plugboard = false;
 	
 	//defining the alphabet
 	static String[] alphabet =  new String[]{"Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Z","X","C","V","B","N","M"};
@@ -149,47 +157,84 @@ public class enigma extends Application {
         	//updates the combo boxes
         	for (int i = 3; i > 0; i--) {
         		final int index = i;
-        		
-   
-        		
+        
+ 
+				//box_list[3-i].setOnAction(null); 
+				//for (int j = 3; j>0; j--) 
         		//changes the current rotors in each slot 
         		rotor_box_list[3-i].setOnAction(new EventHandler<ActionEvent>()
 	        	{
         			@Override 
 	        	    public void handle(ActionEvent e) 
-	        	    {        				
+	        	    {      
+
+        				//box_list[3-index].setOnAction(null);
         				switch(3-index) {
+        					
         					case 2:
         						rotor_1.clear();
         						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_1);
-        						box_list[3-index].setOnAction(null);
+        						//box_list[3-index].setOnAction(null);
         						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
-        						box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+        				//box_list[3-index].setOnAction(new ChangeRotorIndex(index));
         						rotor_counter_1=0;
         						break;
         					case 1:
         						rotor_2=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_2);
-        						box_list[3-index].setOnAction(null);
+        						//box_list[3-index].setOnAction(null);
         						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_2));
-        						box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+        				//box_list[3-index].setOnAction(new ChangeRotorIndex(index));
         						rotor_counter_2=0;
         						break;
         					case 0:
         						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
         						current_rotors.set(0, rotor_3);
-        						box_list[3-index].setOnAction(null);
+        						//box_list[3-index].setOnAction(null);
         						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_3));
-        						box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+        						
         						rotor_counter_3=0;
         						break;
         				}
+        				
 	        	    }
+        			
 	        	});
-         		//changes the rotors position that shows up on the screen
-    			rotor_box_list[3-index].setOnAction(null); 		
-        		box_list[3-i].setOnAction(new ChangeRotorIndex(index));
+
+        		//changes the rotors position that shows up on the screen        
+        		rotor_box_list[3-index].setOnAction(null);	
+        		box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+        		//box_list[3-index].setOnAction(null);
+        		//rotor_box_list[3-index].setOnAction(null);	
+        		//rotor_box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+        		
+        		
+        		//resets the text buttons
+                reset_button.setOnAction(event -> {
+                	input_text_feild.setText("input");
+               		output_text_feild.setText("output");
+               		//resets the dials
+                	//for (int j = 3; j > 0; j--) {
+	        		//	while (!current_rotors.get(j-1).get(0).equals(box_list[3-j].getValue())) {
+	        		//		rotorChange(current_rotors.get(j-1),true,false);
+	        		//	}
+                	//}
+                });
+                
+                //toggles the plugboard editing
+                plugboard_button.setOnAction(event -> {
+                	if (edit_plugboard) {
+                		dark_rect.setOpacity(0);
+                		edit_plugboard=false;
+                	} else {
+                		dark_rect.setOpacity(0.65);
+                		edit_plugboard=true;
+                	}
+                	
+                });
+                
+                
         	}
         }
     }
@@ -205,11 +250,13 @@ public class enigma extends Application {
 		@Override 
 		public void handle(ActionEvent e) 
 		{ 
-
-			while (!current_rotors.get(index-1).get(0).equals(box_list[3-index].getValue())) {
-				rotorChange(current_rotors.get(index-1),true,false);
-			}
 			//box_list[3-index].setOnAction(null);
+			//rotor_box_list[3-index].setOnAction(null);
+			
+			while (!current_rotors.get(index-1).get(0).equals(box_list[3-index].getValue())) {
+				rotorChange(current_rotors.get(index-1),true,true);
+			}
+			
 		}
 	}
     
@@ -224,7 +271,12 @@ public class enigma extends Application {
             if (event.getEventType() == KeyEvent.KEY_PRESSED) {
             	key =""+code;
             	if (validKey(key,alphabet)) {
+            		if (input_text_feild.getText().contentEquals("input")) input_text_feild.setText("");
+            		input_text_feild.setText(input_text_feild.getText()+key);
             		key = rotorUpdate(key);
+            		if (output_text_feild.getText().contentEquals("output")) output_text_feild.setText("");
+            		output_text_feild.setText(output_text_feild.getText()+key);
+            		
             		for (int i = 0; i < LETTER_AMOUNT; i++)
             			
             			if (alphabet[i].equals(key)) {
@@ -234,6 +286,7 @@ public class enigma extends Application {
             				button_list[i].setEffect(black_shadow);	
         				}
         			}
+            	
         		}
         	}
         }
@@ -245,8 +298,7 @@ public class enigma extends Application {
     	Text text;
     	Ellipse rotor;
     	Ellipse label;
-    	Rectangle rect;
-    	
+
      	//generates ellipses and text to go in them
     	for (int i = 0; i < 3; i++) {
     		
@@ -262,7 +314,7 @@ public class enigma extends Application {
     		canvas.getChildren().addAll(rotor);
     		
     		//labels the rotors
-     		text = new Text(SCREEN_WIDTH/2-190+i*140, 70, "Rotor "+(3-i));
+     		text = new Text(SCREEN_WIDTH/2-190+i*140, 50, "Rotor "+(3-i));
      		text.setFont(small_font);
      		text.setFill(Color.WHITE);
      		canvas.getChildren().addAll(text);
@@ -270,28 +322,28 @@ public class enigma extends Application {
      		//adds ellipses to go behind the letters on the rotors
      		label = new Ellipse();
      		label.setCenterX(SCREEN_WIDTH/2-152+i*140);
-     		label.setCenterY(235);	
+     		label.setCenterY(250);	
      		label.setRadiusX(20); 
      		label.setRadiusY(30);
      		label.setFill(DARK_GREY);
      		canvas.getChildren().addAll(label);
      		
-     		//adds menus to change the rotors positions
-     		ObservableList<String> rotor_options = FXCollections.observableArrayList(rotor_name_list);//FXCollections.observableArrayList(current_rotors.get(2-i));//.getName();
+     		//adds menus to change the current used rotors
+     		ObservableList<String> rotor_options = FXCollections.observableArrayList(rotor_name_list);
      		rotor_box_list[i] = new ComboBox<String>(rotor_options);
      		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-205+i*140);
-     		rotor_box_list[i].setLayoutY(85); 
+     		rotor_box_list[i].setLayoutY(70); 
      		rotor_box_list[i].setValue(rotor_name_list.get(2-i));
      		
-     		//adds menus to change the rotors
+     		//adds menus to change the rotors start positions
      		ObservableList<String> options = FXCollections.observableArrayList(current_rotors.get(2-i));
      		box_list[i] = new ComboBox<String>(options);
      		box_list[i].setLayoutX(SCREEN_WIDTH/2-180+i*140);
-     		box_list[i].setLayoutY(270);
+     		box_list[i].setLayoutY(285);
      		box_list[i].setValue(current_rotors.get(i).get(0));
      		
     	    //creates text that represents rotor index's
-    		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 240, current_rotors.get(i).get(0));
+    		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 255, current_rotors.get(i).get(0));
     		rotor_list[2-i].setFont(small_font);
     		rotor_list[2-i].setFill(Color.WHITE);
     	}
@@ -325,36 +377,90 @@ public class enigma extends Application {
         	text_list[i].setFill(LIGHT_GREY);
         	
         }
+		//adds text at the bottom for the creator
+ 		text = new Text(5, 710, "Created By Jackson Dunnigan");
+ 		text.setFont(extra_small_font);
+ 		text.setFill(Color.WHITE);
+ 		canvas.getChildren().addAll(text);
         
-        //input text
+		//labels the input rotor
+ 		text = new Text(250, 185, "Input");
+ 		text.setFont(small_font);
+ 		text.setFill(Color.WHITE);
+ 		canvas.getChildren().addAll(text);
+    	
+		//labels the output rotor
+ 		text = new Text(250, 255, "Output");
+ 		text.setFont(small_font);
+ 		text.setFill(Color.WHITE);
+ 		canvas.getChildren().addAll(text);
+ 		
+        //input button
     	input_text_feild.setEditable(false);
     	input_text_feild.setText("input");
     	input_text_feild.setEventDispatcher(null);
-    	input_text_feild.setLayoutX(875);
-    	input_text_feild.setLayoutY(150);
-    	input_text_feild.setMaxWidth(100);
+    	input_text_feild.setFocusTraversable(false);
+    	input_text_feild.setLayoutX(250);
+    	input_text_feild.setLayoutY(197);
+    	input_text_feild.setMaxWidth(150);
     	input_text_feild.deselect();
-    	
-    	
-    	//output text
+ 		
+    	//output button
     	output_text_feild.setEditable(false);
     	output_text_feild.setText("output");
     	output_text_feild.setEventDispatcher(null);
-    	output_text_feild.setLayoutX(875);
-    	output_text_feild.setLayoutY(200);
-    	output_text_feild.setMaxWidth(100);//(25);
+    	output_text_feild.setFocusTraversable(false);
+    	output_text_feild.setLayoutX(250);
+    	output_text_feild.setLayoutY(266);
+    	output_text_feild.setMaxWidth(150);
     	output_text_feild.deselect();
 
+        //reset button
+        reset_button.setLayoutX(860);
+        reset_button.setLayoutY(187);
+        reset_button.setMinWidth(150);
+        reset_button.setMinHeight(32);
+        reset_button.setMaxHeight(32);
+        reset_button.setPadding(new Insets(3));
         
+        //plugboard toggle button
+        plugboard_button.setLayoutX(860);
+        plugboard_button.setLayoutY(237);
+        plugboard_button.setMinWidth(150);
+        plugboard_button.setMinHeight(32);
+        plugboard_button.setMaxHeight(32);
+        plugboard_button.setPadding(new Insets(3));
+        
+        //help button
+        help_button.setLayoutX(860);
+        help_button.setLayoutY(287);
+        help_button.setMinWidth(150);
+        help_button.setMinHeight(32);
+        help_button.setMaxHeight(32);
+        help_button.setPadding(new Insets(3)); 
+        
+        //black box to cover the screen
+        dark_rect.setX(0);
+        dark_rect.setY(0);
+        dark_rect.setWidth(SCREEN_WIDTH);
+        dark_rect.setHeight(SCREEN_HEIGHT);
+        dark_rect.setFill(Color.BLACK);
+        dark_rect.setOpacity(0);
+        //dark_rect.(0);
         
     	//adds things to the canvas
+        canvas.getChildren().addAll(help_button);
+        canvas.getChildren().addAll(plugboard_button);
+    	canvas.getChildren().addAll(reset_button);
     	canvas.getChildren().addAll(input_text_feild);
     	canvas.getChildren().addAll(output_text_feild);
     	canvas.getChildren().addAll(rotor_box_list);
     	canvas.getChildren().addAll(box_list);
+        canvas.getChildren().addAll(rotor_list);
+    	//canvas.getChildren().addAll(dark_rect);
         canvas.getChildren().addAll(button_list);
         canvas.getChildren().addAll(text_list);
-        canvas.getChildren().addAll(rotor_list);
+
         
     }
     
@@ -373,13 +479,8 @@ public class enigma extends Application {
     	letter = rotor_3.get(letter.charAt(0)-'A');
     	
         //reverses the signal
-    	if (reflector.indexOf(letter)>12) {
-    		letter = reflector.get(reflector.indexOf(letter)-13);   
-    	}
-    	else 
-    	{
-    		letter = reflector.get(reflector.indexOf(letter)+13);   
-    	}
+    	if (reflector.indexOf(letter)>12) letter = reflector.get(reflector.indexOf(letter)-13);   
+    	else letter = reflector.get(reflector.indexOf(letter)+13);   
     	    	
     	//reverses the signal
     	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
@@ -387,7 +488,7 @@ public class enigma extends Application {
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
     	
     	
-    	//shifts the rotors
+    	//shifts the rotors after it encrypts the word
         if (rotorChange(rotor_1,true,true)) {
         	if (rotorChange(rotor_2,true,true)) {
     			rotorChange(rotor_3,true,true);
