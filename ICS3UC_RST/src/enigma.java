@@ -1,4 +1,3 @@
-//import activity4.BallClicker.BallClickHandler;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -127,7 +126,7 @@ public class enigma extends Application {
         yellow_shadow.setRadius(CIRCLE_SIZE);
         yellow_shadow.setColor(LIGHT_YELLOW);  
         
-        //adds rotors to the current rotor list
+        //adds rotor's to the current list
         current_rotors.add(rotor_1);
         current_rotors.add(rotor_2);
         current_rotors.add(rotor_3);
@@ -136,8 +135,7 @@ public class enigma extends Application {
         generateInterface();
         
         //creates a timer and starts it
-        AnimationTimer timer = new Step();
-        timer.start();
+        setComboBoxAction();
 
         //starts the game
         Scene scene = new Scene(canvas, SCREEN_WIDTH, SCREEN_HEIGHT, DARK_GREY);
@@ -150,98 +148,81 @@ public class enigma extends Application {
     
     
     //manages input and updates combo boxes
-    class Step extends AnimationTimer {
+    void setComboBoxAction (){
+    	//updates the combo boxes
+    	for (int i = 3; i > 0; i--) {
+    		final int index = i;
 
-		@Override
-        public void handle(long now) {
-        	//updates the combo boxes
-        	for (int i = 3; i > 0; i--) {
-        		final int index = i;
-        
-         		rotor_box_list[3-index].setOnAction(null);	
-        		box_list[3-index].setOnAction(new ChangeRotorIndex(index));
-				box_list[3-index].setOnAction(null); 
-				//for (int j = 3; j>0; j--) 
-        		//changes the current rotors in each slot 
-        		rotor_box_list[3-index].setOnAction(new EventHandler<ActionEvent>()
-	        	{
-        			@Override 
-	        	    public void handle(ActionEvent e) 
-	        	    {      
-						//box_list[3-index].setOnAction(null);
-        				//box_list[3-index].setOnAction(null);
-        				switch(3-index) {
-        					
-        					case 2:
-        						rotor_1.clear();
-        						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
-        						current_rotors.set(0, rotor_1);
-        						//
-        						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_1));
-        				//box_list[3-index].setOnAction(new ChangeRotorIndex(index));
-        						rotor_counter_1=0;
-        						break;
-        					case 1:
-        						rotor_2=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
-        						current_rotors.set(0, rotor_2);
-        						//box_list[3-index].setOnAction(null);
-        						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_2));
-        				//box_list[3-index].setOnAction(new ChangeRotorIndex(index));
-        						rotor_counter_2=0;
-        						break;
-        					case 0:
-        						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(rotor_box_list[3-index].getValue())]));
-        						current_rotors.set(0, rotor_3);
-        						//box_list[3-index].setOnAction(null);
-        						box_list[3-index].setItems(FXCollections.observableArrayList(rotor_3));
-        						
-        						rotor_counter_3=0;
-        						break;
-        				}
-        				
-	        	    }
-        			
-	        	});
-        		
-        		box_list[3-index].setOnAction(new ChangeRotorIndex(index));
-        		//rotor_box_list[3-index].setOnAction(null);	
-        		//changes the rotors position that shows up on the screen        
+    		//changes the letter change combo boxes
+    		box_list[3-index].setOnAction(new ChangeRotorIndex(index));
+    		
+    		//changes the current rotor's in each slot 
+    		rotor_box_list[3-index].setOnAction(new EventHandler<ActionEvent>(){
+    			@Override 
+        	    public void handle(ActionEvent e) 
+        	    {	
+    				String temp_val = rotor_box_list[3-index].getValue();
+    				switch(3-index) {
+    					
+    					case 2:
+    						rotor_1.clear();
+    						rotor_1=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(temp_val)]));
+    						current_rotors.set(0, rotor_1);
+    						box_list[2].setOnAction(null);
+    						box_list[2].setItems(FXCollections.observableArrayList(rotor_1));
+    						rotor_counter_1=0;
+    						break;
+    					case 1:
+    						rotor_2.clear();
+    						rotor_2=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(temp_val)]));
+    						current_rotors.set(1, rotor_2);
+    						box_list[1].setOnAction(null);
+    						box_list[1].setItems(FXCollections.observableArrayList(rotor_2));
+    						rotor_counter_2=0;
+    						break;
+    					case 0:
+    						rotor_3.clear();
+    						rotor_3=new ArrayList<String>(Arrays.asList(rotor_value_list[rotor_name_list.indexOf(temp_val)]));
+    						current_rotors.set(2,rotor_3);
+    						box_list[0].setOnAction(null);
+    						box_list[0].setItems(FXCollections.observableArrayList(rotor_3));
+    						rotor_counter_3=0;
+    						break;
+    				}	
+        	    }
+        	});
 
-        		//box_list[3-index].setOnAction(null);
-        		//rotor_box_list[3-index].setOnAction(null);	
-        		//rotor_box_list[3-index].setOnAction(new ChangeRotorIndex(index));
-        		
-        		
-        		//resets the text buttons
-                reset_button.setOnAction(event -> {
-                	input_text_feild.setText("input");
-               		output_text_feild.setText("output");
-               		//resets the dials
-                	for (int j = 3; j > 0; j--) {
-	        			while (!current_rotors.get(j-1).get(0).equals(box_list[3-j].getValue())) {
-	        				rotorChange(current_rotors.get(j-1),true,false);
-	        			}
-                	}
-                });
-                
-                //toggles the plugboard editing
-                plugboard_button.setOnAction(event -> {
-                	if (edit_plugboard) {
-                		dark_rect.setOpacity(0);
-                		edit_plugboard=false;
-                	} else {
-                		dark_rect.setOpacity(0.65);
-                		edit_plugboard=true;
-                	}
-                	
-                });
-                
-                
-        	}
-        }
+    		
+    		
+    		//resets the text buttons
+            reset_button.setOnAction(event -> {
+            	input_text_feild.setText("input");
+           		output_text_feild.setText("output");
+           		
+           		//resets the dials
+            	for (int j = 3; j > 0; j--) {
+            		String temp = box_list[3-j].getValue();
+        			while (!current_rotors.get(j-1).get(0).equals(temp)) {
+        				rotorChange(current_rotors.get(j-1),true,false);
+        			}
+            	}
+            });
+            
+            //toggles the plug board editing
+            plugboard_button.setOnAction(event -> {
+            	if (edit_plugboard) {
+            		dark_rect.setOpacity(0);
+            		edit_plugboard=false;
+            	} else {
+            		dark_rect.setOpacity(0.65);
+            		edit_plugboard=true;
+            	}
+            });
+    	}
     }
     
-    //orients the rotors when a setting is changed
+    
+    //orients the rotor's when a setting is changed
     private final class ChangeRotorIndex implements EventHandler<ActionEvent> {
 		private final int index;
 
@@ -251,14 +232,11 @@ public class enigma extends Application {
 
 		@Override 
 		public void handle(ActionEvent e) 
-		{ 
-			//box_list[3-index].setOnAction(null);
-			//rotor_box_list[3-index].setOnAction(null);
-			
-			while (!current_rotors.get(index-1).get(0).equals(box_list[3-index].getValue())) {
-				rotorChange(current_rotors.get(index-1),true,true);
+		{
+			String val = box_list[3-index].getValue();
+			while (!current_rotors.get(index-1).get(0).equals(val)) {
+				rotorChange(current_rotors.get(index-1),true,false);
 			}
-			
 		}
 	}
     
