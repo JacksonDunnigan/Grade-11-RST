@@ -1,7 +1,13 @@
+package rst;
+
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 //import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,6 +214,17 @@ public class enigma extends Application {
             	}
             });
             
+            //opens the manual
+            help_button.setOnAction(event -> {
+	            if (Desktop.isDesktopSupported()) {
+                    HostServices services = getHostServices();
+                    services.showDocument("file:docs/Manual.pdf");
+	            }
+            });
+            
+            
+            
+            
             //toggles the plug board editing
             plugboard_button.setOnAction(event -> {
             	if (edit_plugboard) {
@@ -266,185 +283,11 @@ public class enigma extends Application {
             				button_list[i].setEffect(black_shadow);	
         				}
         			}
-            	
         		}
         	}
         }
 
 
-    
-  //generates the interface
-    void generateInterface() {   
-    	Text text;
-    	Ellipse rotor;
-    	Ellipse label;
-
-     	//generates ellipses and text to go in them
-    	for (int i = 0; i < 3; i++) {
-    		
-    		//creates the ellipses
-    		rotor = new Ellipse();
-    		rotor.setCenterX(SCREEN_WIDTH/2-150+(i*140)); 
-    		rotor.setCenterY(260); 
-    		rotor.setRadiusX(50); 
-    		rotor.setRadiusY(130);
-    		rotor.setEffect(black_shadow);
-    		rotor.setFill(LIGHT_GREY);
-    		rotor.setStroke(Color.BLACK);
-    		canvas.getChildren().addAll(rotor);
-    		
-    		//labels the rotors
-     		text = new Text(SCREEN_WIDTH/2-190+i*140, 50, "Rotor "+(3-i));
-     		text.setFont(small_font);
-     		text.setFill(Color.WHITE);
-     		canvas.getChildren().addAll(text);
-     		
-     		//adds ellipses to go behind the letters on the rotors
-     		label = new Ellipse();
-     		label.setCenterX(SCREEN_WIDTH/2-152+i*140);
-     		label.setCenterY(250);	
-     		label.setRadiusX(20); 
-     		label.setRadiusY(30);
-     		label.setFill(DARK_GREY);
-     		canvas.getChildren().addAll(label);
-     		
-     		//adds menus to change the current used rotors
-     		ObservableList<String> rotor_options = FXCollections.observableArrayList(rotor_name_list);
-     		rotor_box_list[i] = new ComboBox<String>(rotor_options);
-     		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-205+i*140);
-     		rotor_box_list[i].setLayoutY(70); 
-     		rotor_box_list[i].setValue(rotor_name_list.get(2-i));
-     		
-     		//adds menus to change the rotors start positions
-     		ObservableList<String> options = FXCollections.observableArrayList(current_rotors.get(2-i));
-     		box_list[i] = new ComboBox<String>(options);
-     		box_list[i].setLayoutX(SCREEN_WIDTH/2-180+i*140);
-     		box_list[i].setLayoutY(285);
-     		box_list[i].setValue(current_rotors.get(i).get(0));
-     		
-    	    //creates text that represents rotor index's
-    		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 255, current_rotors.get(i).get(0));
-    		rotor_list[2-i].setFont(small_font);
-    		rotor_list[2-i].setFill(Color.WHITE);
-    	}
-
-    	//generates circles and keys
-        for (int i = 0; i < button_list.length; i++) {
-        	int x;
-        	double y;
-        	
-        	if (i < 9) {
-        		x = SCREEN_WIDTH/2-340+(i*80)+CIRCLE_SIZE/2;
-        		y = SCREEN_HEIGHT*0.65;
-        	}
-        	else if (i >=9 && i < 17) {
-        		x = SCREEN_WIDTH/2-1020+(i*80)+CIRCLE_SIZE/2;
-        		y = SCREEN_HEIGHT*0.65+80;
-        	}
-        	else {
-        		x = SCREEN_WIDTH/2-1700+(i*80)+CIRCLE_SIZE/2;
-        		y = SCREEN_HEIGHT*0.65+160;
-        	}
-        	
-        	//creates the circle and gives the circles a message
-    		button_list[i] = new Circle(x, y, CIRCLE_SIZE, Color.BLACK);
-    		button_list[i].setEffect(black_shadow);
-    		button_list[i].setStroke(LIGHT_GREY);
-    		button_list[i].setStrokeWidth(3);
-    		
-        	text_list[i] = new Text(x-CIRCLE_SIZE*0.45, y+CIRCLE_SIZE*0.4, alphabet[i]);
-        	text_list[i].setFont(medium_font);
-        	text_list[i].setFill(LIGHT_GREY);
-        	
-        }
-		//adds text at the bottom for the creator
- 		text = new Text(5, 710, "Created By Jackson Dunnigan");
- 		text.setFont(extra_small_font);
- 		text.setFill(Color.WHITE);
- 		canvas.getChildren().addAll(text);
-        
-		//labels the input rotor
- 		text = new Text(250, 185, "Input");
- 		text.setFont(small_font);
- 		text.setFill(Color.WHITE);
- 		canvas.getChildren().addAll(text);
-    	
-		//labels the output rotor
- 		text = new Text(250, 255, "Output");
- 		text.setFont(small_font);
- 		text.setFill(Color.WHITE);
- 		canvas.getChildren().addAll(text);
- 		
-        //input button
-    	input_text_feild.setEditable(false);
-    	input_text_feild.setText("input");
-    	input_text_feild.setEventDispatcher(null);
-    	input_text_feild.setFocusTraversable(false);
-    	input_text_feild.setLayoutX(250);
-    	input_text_feild.setLayoutY(197);
-    	input_text_feild.setMaxWidth(150);
-    	input_text_feild.deselect();
- 		
-    	//output button
-    	output_text_feild.setEditable(false);
-    	output_text_feild.setText("output");
-    	output_text_feild.setEventDispatcher(null);
-    	output_text_feild.setFocusTraversable(false);
-    	output_text_feild.setLayoutX(250);
-    	output_text_feild.setLayoutY(266);
-    	output_text_feild.setMaxWidth(150);
-    	output_text_feild.deselect();
-
-        //reset button
-        reset_button.setLayoutX(860);
-        reset_button.setLayoutY(187);
-        reset_button.setMinWidth(150);
-        reset_button.setMinHeight(32);
-        reset_button.setMaxHeight(32);
-        reset_button.setPadding(new Insets(3));
-        
-        //plugboard toggle button
-        plugboard_button.setLayoutX(860);
-        plugboard_button.setLayoutY(237);
-        plugboard_button.setMinWidth(150);
-        plugboard_button.setMinHeight(32);
-        plugboard_button.setMaxHeight(32);
-        plugboard_button.setPadding(new Insets(3));
-        
-        //help button
-        help_button.setLayoutX(860);
-        help_button.setLayoutY(287);
-        help_button.setMinWidth(150);
-        help_button.setMinHeight(32);
-        help_button.setMaxHeight(32);
-        help_button.setPadding(new Insets(3)); 
-        
-        //black box to cover the screen
-        dark_rect.setX(0);
-        dark_rect.setY(0);
-        dark_rect.setWidth(SCREEN_WIDTH);
-        dark_rect.setHeight(SCREEN_HEIGHT);
-        dark_rect.setFill(Color.BLACK);
-        dark_rect.setOpacity(0);
-        //dark_rect.(0);
-        
-    	//adds things to the canvas
-        canvas.getChildren().addAll(help_button);
-        canvas.getChildren().addAll(plugboard_button);
-    	canvas.getChildren().addAll(reset_button);
-    	canvas.getChildren().addAll(input_text_feild);
-    	canvas.getChildren().addAll(output_text_feild);
-    	canvas.getChildren().addAll(rotor_box_list);
-    	canvas.getChildren().addAll(box_list);
-        canvas.getChildren().addAll(rotor_list);
-    	//canvas.getChildren().addAll(dark_rect);
-        canvas.getChildren().addAll(button_list);
-        canvas.getChildren().addAll(text_list);
-
-        
-    }
-    
-    
     
     //passes the letter through the rotors and updates the rotors positions
     public static String rotorUpdate(String input){
@@ -466,7 +309,6 @@ public class enigma extends Application {
     	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
     	letter = alphabet_sorted[rotor_2.indexOf(letter)];   
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
-    	
     	
     	//shifts the rotors after it encrypts the word
         if (rotorChange(rotor_1,true,true)) {
@@ -571,7 +413,178 @@ public class enigma extends Application {
     	return false;
     }
     
+
     
+    //generates the interface
+      void generateInterface() {   
+      	Text text;
+      	Ellipse rotor;
+      	Ellipse label;
+
+       	//generates ellipses and text to go in them
+      	for (int i = 0; i < 3; i++) {
+      		
+      		//creates the ellipses
+      		rotor = new Ellipse();
+      		rotor.setCenterX(SCREEN_WIDTH/2-150+(i*140)); 
+      		rotor.setCenterY(260); 
+      		rotor.setRadiusX(50); 
+      		rotor.setRadiusY(130);
+      		rotor.setEffect(black_shadow);
+      		rotor.setFill(LIGHT_GREY);
+      		rotor.setStroke(Color.BLACK);
+      		canvas.getChildren().addAll(rotor);
+      		
+      		//labels the rotor's
+       		text = new Text(SCREEN_WIDTH/2-190+i*140, 50, "Rotor "+(3-i));
+       		text.setFont(small_font);
+       		text.setFill(Color.WHITE);
+       		canvas.getChildren().addAll(text);
+       		
+       		//adds ellipses to go behind the letters on the rotor's
+       		label = new Ellipse();
+       		label.setCenterX(SCREEN_WIDTH/2-152+i*140);
+       		label.setCenterY(250);	
+       		label.setRadiusX(20); 
+       		label.setRadiusY(30);
+       		label.setFill(DARK_GREY);
+       		canvas.getChildren().addAll(label);
+       		
+       		//adds menus to change the current used rotor's
+       		ObservableList<String> rotor_options = FXCollections.observableArrayList(rotor_name_list);
+       		rotor_box_list[i] = new ComboBox<String>(rotor_options);
+       		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-205+i*140);
+       		rotor_box_list[i].setLayoutY(70); 
+       		rotor_box_list[i].setValue(rotor_name_list.get(2-i));
+       		
+       		//adds menus to change the rotor's start positions
+       		ObservableList<String> options = FXCollections.observableArrayList(current_rotors.get(2-i));
+       		box_list[i] = new ComboBox<String>(options);
+       		box_list[i].setLayoutX(SCREEN_WIDTH/2-180+i*140);
+       		box_list[i].setLayoutY(285);
+       		box_list[i].setValue(current_rotors.get(i).get(0));
+       		
+      	    //creates text that represents rotor's index's
+      		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 255, current_rotors.get(i).get(0));
+      		rotor_list[2-i].setFont(small_font);
+      		rotor_list[2-i].setFill(Color.WHITE);
+      	}
+
+      	//generates circles and keys
+          for (int i = 0; i < button_list.length; i++) {
+          	int x;
+          	double y;
+          	
+          	if (i < 9) {
+          		x = SCREEN_WIDTH/2-340+(i*80)+CIRCLE_SIZE/2;
+          		y = SCREEN_HEIGHT*0.65;
+          	}
+          	else if (i >=9 && i < 17) {
+          		x = SCREEN_WIDTH/2-1020+(i*80)+CIRCLE_SIZE/2;
+          		y = SCREEN_HEIGHT*0.65+80;
+          	}
+          	else {
+          		x = SCREEN_WIDTH/2-1700+(i*80)+CIRCLE_SIZE/2;
+          		y = SCREEN_HEIGHT*0.65+160;
+          	}
+          	
+          	//creates the circle and gives the circles a message
+      		button_list[i] = new Circle(x, y, CIRCLE_SIZE, Color.BLACK);
+      		button_list[i].setEffect(black_shadow);
+      		button_list[i].setStroke(LIGHT_GREY);
+      		button_list[i].setStrokeWidth(3);
+      		
+          	text_list[i] = new Text(x-CIRCLE_SIZE*0.45, y+CIRCLE_SIZE*0.4, alphabet[i]);
+          	text_list[i].setFont(medium_font);
+          	text_list[i].setFill(LIGHT_GREY);
+          	
+          }
+  		//adds text at the bottom for the creator
+   		text = new Text(5, 710, "Created By Jackson Dunnigan");
+   		text.setFont(extra_small_font);
+   		text.setFill(Color.WHITE);
+   		canvas.getChildren().addAll(text);
+          
+  		//labels the input rotor
+   		text = new Text(250, 185, "Input");
+   		text.setFont(small_font);
+   		text.setFill(Color.WHITE);
+   		canvas.getChildren().addAll(text);
+      	
+  		//labels the output rotor
+   		text = new Text(250, 255, "Output");
+   		text.setFont(small_font);
+   		text.setFill(Color.WHITE);
+   		canvas.getChildren().addAll(text);
+   		
+          //input button
+      	input_text_feild.setEditable(false);
+      	input_text_feild.setText("input");
+      	input_text_feild.setEventDispatcher(null);
+      	input_text_feild.setFocusTraversable(false);
+      	input_text_feild.setLayoutX(250);
+      	input_text_feild.setLayoutY(197);
+      	input_text_feild.setMaxWidth(150);
+      	input_text_feild.deselect();
+   		
+      	//output button
+      	output_text_feild.setEditable(false);
+      	output_text_feild.setText("output");
+      	output_text_feild.setEventDispatcher(null);
+      	output_text_feild.setFocusTraversable(false);
+      	output_text_feild.setLayoutX(250);
+      	output_text_feild.setLayoutY(266);
+      	output_text_feild.setMaxWidth(150);
+      	output_text_feild.deselect();
+		
+		//reset button
+		reset_button.setLayoutX(860);
+		reset_button.setLayoutY(187);
+		reset_button.setMinWidth(150);
+		reset_button.setMinHeight(32);
+		reset_button.setMaxHeight(32);
+		reset_button.setPadding(new Insets(3));
+		  
+		//plug board toggle button
+		plugboard_button.setLayoutX(860);
+		plugboard_button.setLayoutY(237);
+		plugboard_button.setMinWidth(150);
+		plugboard_button.setMinHeight(32);
+		plugboard_button.setMaxHeight(32);
+		plugboard_button.setPadding(new Insets(3));
+		  
+		//help button
+		help_button.setLayoutX(860);
+		help_button.setLayoutY(287);
+		help_button.setMinWidth(150);
+		help_button.setMinHeight(32);
+		help_button.setMaxHeight(32);
+		help_button.setPadding(new Insets(3)); 
+		  
+		//black box to cover the screen
+		dark_rect.setX(0);
+		dark_rect.setY(0);
+		dark_rect.setWidth(SCREEN_WIDTH);
+		dark_rect.setHeight(SCREEN_HEIGHT);
+		dark_rect.setFill(Color.BLACK);
+		dark_rect.setOpacity(0);
+		  
+		//adds things to the canvas
+		canvas.getChildren().addAll(help_button);
+		canvas.getChildren().addAll(plugboard_button);
+		canvas.getChildren().addAll(reset_button);
+		canvas.getChildren().addAll(input_text_feild);
+		canvas.getChildren().addAll(output_text_feild);
+		canvas.getChildren().addAll(rotor_box_list);
+		canvas.getChildren().addAll(box_list);
+		canvas.getChildren().addAll(rotor_list);
+		canvas.getChildren().addAll(button_list);
+		canvas.getChildren().addAll(text_list);
+		//canvas.getChildren().addAll(dark_rect);
+		
+        }
+     
+      
 	//starts the program
     public static void main(String[] args) {
         launch(args);

@@ -1,4 +1,5 @@
-//this converts a string of letter into a list
+package rst;
+//this converts a string of letter into a list only for testing purposes
 public class convertToList {
 	public static void main(String[] args) {
 		String[] array = new String[26];
