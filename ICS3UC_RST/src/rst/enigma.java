@@ -4,16 +4,9 @@ import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-//import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-//import activity4.Pong.UserKeyInput;
-import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -30,16 +23,9 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.util.Collections;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
  
 public class enigma extends Application {
@@ -148,6 +134,7 @@ public class enigma extends Application {
         scene.addEventHandler(KeyEvent.ANY, new UserKeyInput());
         primaryStage.setTitle("Enigma machine");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
     }
@@ -221,10 +208,7 @@ public class enigma extends Application {
                     services.showDocument("file:docs/Manual.pdf");
 	            }
             });
-            
-            
-            
-            
+
             //toggles the plug board editing
             plugboard_button.setOnAction(event -> {
             	if (edit_plugboard) {
