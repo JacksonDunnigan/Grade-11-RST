@@ -10,7 +10,6 @@ import java.util.Arrays;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -30,8 +29,8 @@ import javafx.event.ActionEvent;
  
 public class enigma extends Application {
 	//declares variables
-	static final int SCREEN_WIDTH = 1280;
-	static final int SCREEN_HEIGHT = 720;
+	static final int SCREEN_WIDTH = 1600;
+	static final int SCREEN_HEIGHT = 900;
 	static final int LETTER_AMOUNT = 26;
 	static final int CIRCLE_SIZE = 30;
 	
@@ -50,20 +49,24 @@ public class enigma extends Application {
 	static ComboBox<String>[] box_list = new ComboBox[3];
 	static ComboBox<String>[] rotor_box_list = new ComboBox[3];
 	
-	//defines text feild to hold the input and output
+	//defines text field to hold the input and output
 	TextField input_text_feild = new TextField ();
 	TextField output_text_feild = new TextField ();
     Button reset_button = new Button("Reset");
     Button help_button = new Button("Help");
-    
-    //plugboard variables
-	Rectangle dark_rect = new Rectangle();
-    Button plugboard_button = new Button("Edit Plugboard");
-	Boolean edit_plugboard = false;
-	
+
 	//defining the alphabet
 	static String[] alphabet =  new String[]{"Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L","Z","X","C","V","B","N","M"};
 	static String[] alphabet_sorted =  new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+    
+	//plug board variables
+	Rectangle dark_rect = new Rectangle();
+    Button plugboard_button = new Button("Edit Plugboard");
+	Boolean edit_plugboard = false;
+	static TextField[] plugboard_list = new TextField[26];
+	static ArrayList<String> plugboard_start = new ArrayList<String>(Arrays.asList(alphabet_sorted));	
+	static ArrayList<String> plugboard_switch = new ArrayList<String>(Arrays.asList(alphabet_sorted));	
+	
 	
 	//makes lists of rotors
 	static String[] rotor_I = new String[] {"E","K","M","F","L","G","D","Q","V","Z","N","T","O","W","Y","H","X","U","S","P","A","I","B","R","C","J"};
@@ -126,9 +129,17 @@ public class enigma extends Application {
         //generates the interface
         generateInterface();
         
+        //makes all the starting positions
+    	for (int j = 3; j > 0; j--) {
+    		String temp = box_list[3-j].getValue();
+			while (!current_rotors.get(j-1).get(0).equals(temp)) {
+				rotorChange(current_rotors.get(j-1),true,false);
+			}
+    	}
+        
         //creates a timer and starts it
         setComboBoxAction();
-
+        
         //starts the game
         Scene scene = new Scene(canvas, SCREEN_WIDTH, SCREEN_HEIGHT, DARK_GREY);
         scene.addEventHandler(KeyEvent.ANY, new UserKeyInput());
@@ -208,17 +219,23 @@ public class enigma extends Application {
                     services.showDocument("file:docs/Manual.pdf");
 	            }
             });
-
+            
+            //.setText(plugboard_list[t].getText().substring(0, 1));
             //toggles the plug board editing
-            plugboard_button.setOnAction(event -> {
-            	if (edit_plugboard) {
-            		dark_rect.setOpacity(0);
-            		edit_plugboard=false;
-            	} else {
-            		dark_rect.setOpacity(0.65);
-            		edit_plugboard=true;
-            	}
-            });
+            for (int t = 0; t < 26; t++) {
+            	int plugboard_index=t;
+            	plugboard_list[plugboard_index].setOnAction(event -> {
+            		
+            		//limits the input to one letter to swap plugs
+            		if (plugboard_list[plugboard_index].getText().length()>1) {
+            			plugboard_list[plugboard_index].setText(""+ plugboard_list[plugboard_index].getText().charAt(0));
+            			plugboard_list[plugboard_start.indexOf(plugboard_list[plugboard_index].getText())].setText(plugboard_list[plugboard_index].getText());//(plugboard_index)]=plugboard_list[plugboard_index].getText();
+            		}
+            		//changes the plug board options
+            		
+		            //System.out.print(plugboard_list[plugboard_index].getText());
+	            });
+            }
     	}
     }
     
@@ -280,6 +297,9 @@ public class enigma extends Application {
     	char key =  input.charAt(0);
     	String letter = ""+key;
     	
+    	//sends the signal through the plug board
+    	letter = plugboard_switch.get(plugboard_start.indexOf(letter));
+    	
     	//sends the signal through the rotors
     	letter = rotor_1.get(letter.charAt(0)-'A');   
     	letter = rotor_2.get(letter.charAt(0)-'A');
@@ -293,6 +313,9 @@ public class enigma extends Application {
     	letter = alphabet_sorted[rotor_3.indexOf(letter)];   
     	letter = alphabet_sorted[rotor_2.indexOf(letter)];   
     	letter = alphabet_sorted[rotor_1.indexOf(letter)];   
+    	
+    	//sends the signal through the plug board
+    	letter = plugboard_switch.get(plugboard_start.indexOf(letter));
     	
     	//shifts the rotors after it encrypts the word
         if (rotorChange(rotor_1,true,true)) {
@@ -411,16 +434,16 @@ public class enigma extends Application {
       		//creates the ellipses
       		rotor = new Ellipse();
       		rotor.setCenterX(SCREEN_WIDTH/2-150+(i*140)); 
-      		rotor.setCenterY(260); 
+      		rotor.setCenterY(SCREEN_HEIGHT*0.3); 
       		rotor.setRadiusX(50); 
-      		rotor.setRadiusY(130);
+      		rotor.setRadiusY(120);
       		rotor.setEffect(black_shadow);
       		rotor.setFill(LIGHT_GREY);
       		rotor.setStroke(Color.BLACK);
       		canvas.getChildren().addAll(rotor);
       		
       		//labels the rotor's
-       		text = new Text(SCREEN_WIDTH/2-190+i*140, 50, "Rotor "+(3-i));
+       		text = new Text(SCREEN_WIDTH/2-190+i*140, SCREEN_HEIGHT*0.07, "Rotor "+(3-i));
        		text.setFont(small_font);
        		text.setFill(Color.WHITE);
        		canvas.getChildren().addAll(text);
@@ -428,7 +451,7 @@ public class enigma extends Application {
        		//adds ellipses to go behind the letters on the rotor's
        		label = new Ellipse();
        		label.setCenterX(SCREEN_WIDTH/2-152+i*140);
-       		label.setCenterY(250);	
+       		label.setCenterY(SCREEN_HEIGHT*0.275);	
        		label.setRadiusX(20); 
        		label.setRadiusY(30);
        		label.setFill(DARK_GREY);
@@ -438,38 +461,38 @@ public class enigma extends Application {
        		ObservableList<String> rotor_options = FXCollections.observableArrayList(rotor_name_list);
        		rotor_box_list[i] = new ComboBox<String>(rotor_options);
        		rotor_box_list[i].setLayoutX(SCREEN_WIDTH/2-205+i*140);
-       		rotor_box_list[i].setLayoutY(70); 
+       		rotor_box_list[i].setLayoutY(SCREEN_HEIGHT*0.09); 
        		rotor_box_list[i].setValue(rotor_name_list.get(2-i));
        		
        		//adds menus to change the rotor's start positions
        		ObservableList<String> options = FXCollections.observableArrayList(current_rotors.get(2-i));
        		box_list[i] = new ComboBox<String>(options);
        		box_list[i].setLayoutX(SCREEN_WIDTH/2-180+i*140);
-       		box_list[i].setLayoutY(285);
+       		box_list[i].setLayoutY(SCREEN_HEIGHT*0.32);
        		box_list[i].setValue(current_rotors.get(i).get(0));
        		
       	    //creates text that represents rotor's index's
-      		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, 255, current_rotors.get(i).get(0));
+      		rotor_list[2-i] = new Text(SCREEN_WIDTH/2-160+i*140, SCREEN_HEIGHT*0.275, current_rotors.get(i).get(0));
       		rotor_list[2-i].setFont(small_font);
       		rotor_list[2-i].setFill(Color.WHITE);
       	}
 
       	//generates circles and keys
-          for (int i = 0; i < button_list.length; i++) {
+        for (int i = 0; i < button_list.length; i++) {
           	int x;
           	double y;
           	
           	if (i < 9) {
           		x = SCREEN_WIDTH/2-340+(i*80)+CIRCLE_SIZE/2;
-          		y = SCREEN_HEIGHT*0.65;
+          		y = SCREEN_HEIGHT*0.73;
           	}
           	else if (i >=9 && i < 17) {
           		x = SCREEN_WIDTH/2-1020+(i*80)+CIRCLE_SIZE/2;
-          		y = SCREEN_HEIGHT*0.65+80;
+          		y = SCREEN_HEIGHT*0.73+80;
           	}
           	else {
           		x = SCREEN_WIDTH/2-1700+(i*80)+CIRCLE_SIZE/2;
-          		y = SCREEN_HEIGHT*0.65+160;
+          		y = SCREEN_HEIGHT*0.73+160;
           	}
           	
           	//creates the circle and gives the circles a message
@@ -482,31 +505,65 @@ public class enigma extends Application {
           	text_list[i].setFont(medium_font);
           	text_list[i].setFill(LIGHT_GREY);
           	
+          	//generates plug board slots
+          	
+          	//plugboard_list[i].setText(alphabet_sorted[i]);
+          	plugboard_list[i] = new TextField();
+          	if (i<13) {
+          		//creates text to show the starting letter
+          		text = new Text(SCREEN_WIDTH/2-373+i*60,SCREEN_HEIGHT*0.51,alphabet_sorted[i]);
+           		text.setFont(small_font);
+           		text.setFill(Color.WHITE);
+           		canvas.getChildren().addAll(text);
+           		
+           		//adds the text to the plug board
+              	plugboard_list[i].setMaxWidth(40);
+              	plugboard_list[i].setLayoutX(SCREEN_WIDTH/2-385+i*60);
+              	plugboard_list[i].setLayoutY(SCREEN_HEIGHT*0.52);
+          	}
+          	else {
+          		//creates text to show the starting letter
+          		text = new Text (SCREEN_WIDTH/2-373+(i-13)*60,SCREEN_HEIGHT*0.59,alphabet_sorted[i]);
+           		text.setFont(small_font);
+           		text.setFill(Color.WHITE);
+           		canvas.getChildren().addAll(text);
+           		
+           		//adds the text to the plug board
+              	plugboard_list[i].setMaxWidth(40);
+              	plugboard_list[i].setLayoutX(SCREEN_WIDTH/2-385+(i-13)*60);
+              	plugboard_list[i].setLayoutY(SCREEN_HEIGHT*0.6);
+          	}
           }
+        
+        
+  		//adds text to label the plug board
+   		text = new Text(SCREEN_WIDTH*0.455, SCREEN_HEIGHT*0.47, "Plug Board");
+   		text.setFont(small_font);
+   		text.setFill(Color.WHITE);
+   		canvas.getChildren().addAll(text);
+   		
   		//adds text at the bottom for the creator
-   		text = new Text(5, 710, "Created By Jackson Dunnigan");
+   		text = new Text(5, SCREEN_HEIGHT, "Created By Jackson Dunnigan");
    		text.setFont(extra_small_font);
    		text.setFill(Color.WHITE);
    		canvas.getChildren().addAll(text);
           
   		//labels the input rotor
-   		text = new Text(250, 185, "Input");
+   		text = new Text(SCREEN_WIDTH*0.25, 185, "Input");
    		text.setFont(small_font);
    		text.setFill(Color.WHITE);
    		canvas.getChildren().addAll(text);
       	
   		//labels the output rotor
-   		text = new Text(250, 255, "Output");
+   		text = new Text(SCREEN_WIDTH*0.25, 255, "Output");
    		text.setFont(small_font);
    		text.setFill(Color.WHITE);
    		canvas.getChildren().addAll(text);
    		
-          //input button
+         //input button
       	input_text_feild.setEditable(false);
       	input_text_feild.setText("input");
-      	input_text_feild.setEventDispatcher(null);
-      	input_text_feild.setFocusTraversable(false);
-      	input_text_feild.setLayoutX(250);
+      	input_text_feild.setLayoutX(SCREEN_WIDTH*0.25);
       	input_text_feild.setLayoutY(197);
       	input_text_feild.setMaxWidth(150);
       	input_text_feild.deselect();
@@ -514,15 +571,15 @@ public class enigma extends Application {
       	//output button
       	output_text_feild.setEditable(false);
       	output_text_feild.setText("output");
-      	output_text_feild.setEventDispatcher(null);
-      	output_text_feild.setFocusTraversable(false);
-      	output_text_feild.setLayoutX(250);
+      	output_text_feild.setLayoutX(SCREEN_WIDTH*0.25);
       	output_text_feild.setLayoutY(266);
       	output_text_feild.setMaxWidth(150);
       	output_text_feild.deselect();
-		
+      	//output_text_feild.setEventDispatcher(null);
+      	//output_text_feild.setFocusTraversable(false);
+      	
 		//reset button
-		reset_button.setLayoutX(860);
+		reset_button.setLayoutX(SCREEN_WIDTH*0.65);
 		reset_button.setLayoutY(187);
 		reset_button.setMinWidth(150);
 		reset_button.setMinHeight(32);
@@ -530,7 +587,7 @@ public class enigma extends Application {
 		reset_button.setPadding(new Insets(3));
 		  
 		//plug board toggle button
-		plugboard_button.setLayoutX(860);
+		plugboard_button.setLayoutX(SCREEN_WIDTH*0.65);
 		plugboard_button.setLayoutY(237);
 		plugboard_button.setMinWidth(150);
 		plugboard_button.setMinHeight(32);
@@ -538,7 +595,7 @@ public class enigma extends Application {
 		plugboard_button.setPadding(new Insets(3));
 		  
 		//help button
-		help_button.setLayoutX(860);
+		help_button.setLayoutX(SCREEN_WIDTH*0.65);
 		help_button.setLayoutY(287);
 		help_button.setMinWidth(150);
 		help_button.setMinHeight(32);
@@ -564,6 +621,7 @@ public class enigma extends Application {
 		canvas.getChildren().addAll(rotor_list);
 		canvas.getChildren().addAll(button_list);
 		canvas.getChildren().addAll(text_list);
+		canvas.getChildren().addAll(plugboard_list);
 		//canvas.getChildren().addAll(dark_rect);
 		
         }
