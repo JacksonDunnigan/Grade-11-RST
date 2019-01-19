@@ -1,3 +1,4 @@
+//Created By Jackson Dunnigan 2018-2019
 package rst;
 
 import javafx.application.Application;
@@ -52,7 +53,7 @@ public class enigma extends Application {
 	//defines text field to hold the input and output
 	TextField input_text_feild = new TextField ();
 	TextField output_text_feild = new TextField ();
-    Button reset_button = new Button("Reset");
+    Button reset_button = new Button("Reset Rotors");
     Button help_button = new Button("Help");
 
 	//defining the alphabet
@@ -61,14 +62,14 @@ public class enigma extends Application {
     
 	//plug board variables
 	Rectangle dark_rect = new Rectangle();
-    Button plugboard_button = new Button("Edit Plugboard");
+    Button plugboard_button = new Button("Reset Plugboard");
 	Boolean edit_plugboard = false;
 	static TextField[] plugboard_list = new TextField[26];
 	static ArrayList<String> plugboard_start = new ArrayList<String>(Arrays.asList(alphabet_sorted));	
 	static ArrayList<String> plugboard_switch = new ArrayList<String>(Arrays.asList(alphabet_sorted));	
 	
 	
-	//makes lists of rotors
+	//makes lists of rotor's
 	static String[] rotor_I = new String[] {"E","K","M","F","L","G","D","Q","V","Z","N","T","O","W","Y","H","X","U","S","P","A","I","B","R","C","J"};
 	static String[] rotor_II = new String[] {"A","J","D","K","S","I","R","U","X","B","L","H","W","T","M","C","Q","G","Z","N","P","Y","F","V","O","E"};
 	static String[] rotor_III = new String[] {"B","D","F","H","J","L","C","P","R","T","X","V","Z","N","Y","E","I","W","G","A","K","M","U","S","Q","O"};
@@ -198,7 +199,7 @@ public class enigma extends Application {
 
     		
     		
-    		//resets the text buttons
+    		//resets the text buttons and rotor's
             reset_button.setOnAction(event -> {
             	input_text_feild.setText("input");
            		output_text_feild.setText("output");
@@ -212,28 +213,42 @@ public class enigma extends Application {
             	}
             });
             
-            //opens the manual
-            help_button.setOnAction(event -> {
-	            if (Desktop.isDesktopSupported()) {
-                    HostServices services = getHostServices();
-                    services.showDocument("file:docs/Manual.pdf");
-	            }
+            //resets the plug board
+            plugboard_button.setOnAction(event -> {
+	        	//resets the plug board
+	        	plugboard_switch=plugboard_start;
+	        	for (int l = 0; l < 26; l++) {
+	        		plugboard_list[l].setText("");
+	        	}
             });
             
-            //.setText(plugboard_list[t].getText().substring(0, 1));
+            
+            //opens the manual
+            help_button.setOnAction(event -> {
+//	            if (Desktop.isDesktopSupported()) {
+//                    HostServices services = getHostServices();
+//                    services.showDocument("file:docs/Manual.pdf");
+//	            }
+            	getHostServices().showDocument(getClass()
+            		    .getResource("Manual.pdf").toString());
+            	//
+            });
+            
+            
             //toggles the plug board editing
             for (int t = 0; t < 26; t++) {
             	int plugboard_index=t;
             	plugboard_list[plugboard_index].setOnAction(event -> {
             		
-            		//limits the input to one letter to swap plugs
-            		if (plugboard_list[plugboard_index].getText().length()>1) {
-            			plugboard_list[plugboard_index].setText(""+ plugboard_list[plugboard_index].getText().charAt(0));
-            			plugboard_list[plugboard_start.indexOf(plugboard_list[plugboard_index].getText())].setText(plugboard_list[plugboard_index].getText());//(plugboard_index)]=plugboard_list[plugboard_index].getText();
-            		}
-            		//changes the plug board options
-            		
-		            //System.out.print(plugboard_list[plugboard_index].getText());
+        			//sets the current buttons message
+        			plugboard_list[plugboard_index].setText(""+ plugboard_list[plugboard_index].getText().toUpperCase().charAt(0));
+        			//sets the other buttons message
+        			plugboard_list[plugboard_start.indexOf(plugboard_list[plugboard_index].getText())].setText(plugboard_start.get(plugboard_index));
+       		
+        			//sets the current buttons 
+        			plugboard_switch.set(plugboard_index,""+plugboard_list[plugboard_index].getText().charAt(0));
+		            //sets the alternate button
+        			plugboard_switch.set(plugboard_start.indexOf(plugboard_switch.get(plugboard_index)),plugboard_start.get(plugboard_index));
 	            });
             }
     	}
@@ -290,7 +305,7 @@ public class enigma extends Application {
 
 
     
-    //passes the letter through the rotors and updates the rotors positions
+    //passes the letter through the rotor's and updates the rotor's positions
     public static String rotorUpdate(String input){
     	
     	//converts the key into a number from 1 to 25
@@ -300,7 +315,7 @@ public class enigma extends Application {
     	//sends the signal through the plug board
     	letter = plugboard_switch.get(plugboard_start.indexOf(letter));
     	
-    	//sends the signal through the rotors
+    	//sends the signal through the rotor's
     	letter = rotor_1.get(letter.charAt(0)-'A');   
     	letter = rotor_2.get(letter.charAt(0)-'A');
     	letter = rotor_3.get(letter.charAt(0)-'A');
@@ -317,7 +332,7 @@ public class enigma extends Application {
     	//sends the signal through the plug board
     	letter = plugboard_switch.get(plugboard_start.indexOf(letter));
     	
-    	//shifts the rotors after it encrypts the word
+    	//shifts the rotor's after it encrypts the word
         if (rotorChange(rotor_1,true,true)) {
         	if (rotorChange(rotor_2,true,true)) {
     			rotorChange(rotor_3,true,true);
@@ -507,7 +522,7 @@ public class enigma extends Application {
           	
           	//generates plug board slots
           	
-          	//plugboard_list[i].setText(alphabet_sorted[i]);
+          	
           	plugboard_list[i] = new TextField();
           	if (i<13) {
           		//creates text to show the starting letter
@@ -602,14 +617,6 @@ public class enigma extends Application {
 		help_button.setMaxHeight(32);
 		help_button.setPadding(new Insets(3)); 
 		  
-		//black box to cover the screen
-		dark_rect.setX(0);
-		dark_rect.setY(0);
-		dark_rect.setWidth(SCREEN_WIDTH);
-		dark_rect.setHeight(SCREEN_HEIGHT);
-		dark_rect.setFill(Color.BLACK);
-		dark_rect.setOpacity(0);
-		  
 		//adds things to the canvas
 		canvas.getChildren().addAll(help_button);
 		canvas.getChildren().addAll(plugboard_button);
@@ -622,7 +629,6 @@ public class enigma extends Application {
 		canvas.getChildren().addAll(button_list);
 		canvas.getChildren().addAll(text_list);
 		canvas.getChildren().addAll(plugboard_list);
-		//canvas.getChildren().addAll(dark_rect);
 		
         }
      
