@@ -230,16 +230,23 @@ public class enigma extends Application {
 //                    services.showDocument("file:docs/Manual.pdf");
 //	            }
             	getHostServices().showDocument(getClass()
-            		    .getResource("Manual.pdf").toString());
+            		    .getResource("/rst/Manual.pdf").toString());
             	//
             });
             
             
             //toggles the plug board editing
             for (int t = 0; t < 26; t++) {
-            	int plugboard_index=t;
+            	int plugboard_index = t;
             	plugboard_list[plugboard_index].setOnAction(event -> {
             		
+            		//resets the dials
+                	for (int j = 3; j > 0; j--) {
+                		String temp = box_list[3-j].getValue();
+            			while (!current_rotors.get(j-1).get(0).equals(temp)) {
+            				rotorChange(current_rotors.get(j-1),true,false);
+            			}
+                	}
         			//sets the current buttons message
         			plugboard_list[plugboard_index].setText(""+ plugboard_list[plugboard_index].getText().toUpperCase().charAt(0));
         			//sets the other buttons message
