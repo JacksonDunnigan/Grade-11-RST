@@ -224,15 +224,14 @@ public class enigma extends Application {
             
             
             //opens the manual
-            help_button.setOnAction(event -> {
+//            help_button.setOnAction(event -> {
 //	            if (Desktop.isDesktopSupported()) {
 //                    HostServices services = getHostServices();
 //                    services.showDocument("file:docs/Manual.pdf");
 //	            }
-            	getHostServices().showDocument(getClass()
-            		    .getResource("/rst/Manual.pdf").toString());
-            	//
-            });
+//            	getHostServices().showDocument(getClass()
+//            		    .getResource("/rst/Manual.pdf").toString());
+//            });
             
             
             //toggles the plug board editing
@@ -247,14 +246,12 @@ public class enigma extends Application {
             				rotorChange(current_rotors.get(j-1),true,false);
             			}
                 	}
-        			//sets the current buttons message
+        			//sets the messages
         			plugboard_list[plugboard_index].setText(""+ plugboard_list[plugboard_index].getText().toUpperCase().charAt(0));
-        			//sets the other buttons message
         			plugboard_list[plugboard_start.indexOf(plugboard_list[plugboard_index].getText())].setText(plugboard_start.get(plugboard_index));
        		
-        			//sets the current buttons 
+        			//sets the buttons 
         			plugboard_switch.set(plugboard_index,""+plugboard_list[plugboard_index].getText().charAt(0));
-		            //sets the alternate button
         			plugboard_switch.set(plugboard_start.indexOf(plugboard_switch.get(plugboard_index)),plugboard_start.get(plugboard_index));
 	            });
             }
@@ -602,7 +599,7 @@ public class enigma extends Application {
       	
 		//reset button
 		reset_button.setLayoutX(SCREEN_WIDTH*0.65);
-		reset_button.setLayoutY(187);
+		reset_button.setLayoutY(197);
 		reset_button.setMinWidth(150);
 		reset_button.setMinHeight(32);
 		reset_button.setMaxHeight(32);
@@ -610,19 +607,19 @@ public class enigma extends Application {
 		  
 		//plug board toggle button
 		plugboard_button.setLayoutX(SCREEN_WIDTH*0.65);
-		plugboard_button.setLayoutY(237);
+		plugboard_button.setLayoutY(250);
 		plugboard_button.setMinWidth(150);
 		plugboard_button.setMinHeight(32);
 		plugboard_button.setMaxHeight(32);
 		plugboard_button.setPadding(new Insets(3));
 		  
 		//help button
-		help_button.setLayoutX(SCREEN_WIDTH*0.65);
-		help_button.setLayoutY(287);
-		help_button.setMinWidth(150);
-		help_button.setMinHeight(32);
-		help_button.setMaxHeight(32);
-		help_button.setPadding(new Insets(3)); 
+//		help_button.setLayoutX(SCREEN_WIDTH*0.65);
+//		help_button.setLayoutY(287);
+//		help_button.setMinWidth(150);
+//		help_button.setMinHeight(32);
+//		help_button.setMaxHeight(32);
+//		help_button.setPadding(new Insets(3)); 
 		  
 		//adds things to the canvas
 		canvas.getChildren().addAll(help_button);
